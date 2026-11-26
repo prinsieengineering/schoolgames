@@ -6,19 +6,21 @@ import { niveauInfo } from '../core/beloningen';
 import { spelletjesVoor } from '../spelletjes/register';
 import { VAKKEN, WERELDEN, leerjaarKort, leerjaarNaam, wereldVan } from './werelden';
 import { geluid } from '../core/geluid';
+import { snelstartsVoor, type Snelstart } from './snelstart';
 
 /** Facultatief Frans (3e/4e) enkel tonen als de ouder het aanzette. */
 export const spelZichtbaar = (s: SpelDef, p: Profiel) => !s.facultatief || p.instellingen.frans;
 
 export type Bestemming = 'speelhal' | 'winkel' | 'trofeeen';
 
-export function Thuis({ onSpel, onGa }: { onSpel: (id: string) => void; onGa: (b: Bestemming) => void }) {
+export function Thuis({ onSpel, onArcade, onGa }: { onSpel: (id: string) => void; onArcade: (s: Snelstart) => void; onGa: (b: Bestemming) => void }) {
   const { profiel } = useActief();
   const { kies } = useProfielen();
   const [lj, setLj] = useState<Leerjaar>(profiel.leerjaar);
   const niv = niveauInfo(profiel.xp);
   const wereld = wereldVan(lj);
   const spellen = spelletjesVoor(lj).filter((s) => spelZichtbaar(s, profiel));
+  const snelstarts = snelstartsVoor(lj);
 
   return (
     <div className="scherm thuis" style={{ background: wereld.lucht }}>
@@ -73,6 +75,23 @@ export function Thuis({ onSpel, onGa }: { onSpel: (id: string) => void; onGa: (b
       </h2>
 
       <div className="spel-rooster">
+        {snelstarts.map((s) => (
+          <button
+            key={s.id}
+            className="spel-kaart snelstart"
+            style={{ '--wkleur': wereld.kleur } as CSSProperties}
+            onClick={() => {
+              geluid.klik();
+              onArcade(s);
+            }}
+          >
+            <span className="spel-icoon">{s.icoon}</span>
+            <strong>{s.titel}</strong>
+            <span className="klein">{s.beschrijving}</span>
+            <span className="vak-label">🕹️ Speelhal</span>
+            {profiel.arcade[s.arcadeId] && <span className="sterren">🏆 record {profiel.arcade[s.arcadeId].record}</span>}
+          </button>
+        ))}
         {spellen.map((s) => {
           const v = profiel.spellen[s.id];
           const sterren = v?.sterren.reduce((a, b) => a + b, 0) ?? 0;
