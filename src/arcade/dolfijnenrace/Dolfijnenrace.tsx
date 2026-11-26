@@ -16,8 +16,12 @@ import { schud } from '../../core/random';
 import { DIEPTE, ZONES, dolfijn, finish, mengKleur, schip, zeemeermin, zoneVan } from './tekenen';
 
 const DOLFIJN_X = 120;
-const BAAN_Y = [228, 370, 512];
-const MEERMIN_Y = 132;
+// Bovenaan (tot ongeveer y = 175) staat de vraag in het water, vlak boven de banen.
+// De zeemeermin zwemt onder de banen, de racebalk ligt op de bodem.
+const BAAN_Y = [250, 362, 474];
+const MEERMIN_Y = 562;
+/** Halve hoogte van een bellenpoort (kleiner dan de helft van de baanafstand). */
+const RING_Y = 48;
 /** Lengte van de race in pixels (voor het decor). */
 const BAAN_PX = 14000;
 /** Ongeveer zoveel poorten als je niets juist hebt; met alles juist zijn het er ongeveer 15. */
@@ -294,7 +298,7 @@ export function Dolfijnenrace({ spel, bron, avatar, leerjaar, onEinde }: ArcadeP
           ctx.strokeStyle = '#fff';
           ctx.lineWidth = 1.5;
           ctx.beginPath();
-          ctx.arc(p.x + Math.cos(a) * 30, y + Math.sin(a) * 56, 6 + (k % 3), 0, Math.PI * 2);
+          ctx.arc(p.x + Math.cos(a) * 30, y + Math.sin(a) * RING_Y, 6 + (k % 3), 0, Math.PI * 2);
           ctx.fill();
           ctx.stroke();
         }
@@ -320,7 +324,7 @@ export function Dolfijnenrace({ spel, bron, avatar, leerjaar, onEinde }: ArcadeP
     tekenDeeltjes(ctx, s.deeltjes);
     tekenZweef(ctx, s.zweef, dt);
 
-    // racebalk bovenaan
+    // racebalk op de bodem
     raceBalk(ctx, s.afstand, s.meermin, avatarImg);
 
     if (s.banner.leven > 0) {
@@ -328,9 +332,9 @@ export function Dolfijnenrace({ spel, bron, avatar, leerjaar, onEinde }: ArcadeP
       ctx.globalAlpha = Math.min(1, s.banner.leven);
       ctx.fillStyle = 'rgba(0,0,0,0.35)';
       ctx.beginPath();
-      ctx.roundRect(B / 2 - 150, 290 - 30, 300, 60, 30);
+      ctx.roundRect(B / 2 - 150, 200 - 26, 300, 52, 26);
       ctx.fill();
-      tekst(ctx, s.banner.tekst, B / 2, 290, 28, '#fff');
+      tekst(ctx, s.banner.tekst, B / 2, 200, 26, '#fff');
       ctx.restore();
     }
 
@@ -342,11 +346,14 @@ export function Dolfijnenrace({ spel, bron, avatar, leerjaar, onEinde }: ArcadeP
   const standTekst = { voor: '🐬 Jij ligt voor!', achter: '🧜‍♀️ Haal haar in!', naast: '🐬🧜‍♀️ Nek aan nek!' }[hud.stand];
 
   return (
-    <div className="arcade-layout kolom">
-      <VraagBalk vraag={vraag} melding={melding} />
+    <div className="arcade-layout kolom groot">
       <div className="speelveld-kolom">
         <Hud items={[`✅ ${hud.juist}`, `🏅 ${hud.punten}`, `${ZONES[hud.zone].icoon} ${ZONES[hud.zone].naam}`, standTekst]} />
         <div className="canvas-houder">
+          {/* De vraag staat in het water, vlak boven de poorten: zo hoeft het kind niet heen en weer te kijken. */}
+          <div className="vraag-in-veld">
+            <VraagBalk vraag={vraag} melding={melding} />
+          </div>
           <canvas
             ref={canvasRef}
             className="speelveld"
@@ -375,15 +382,15 @@ export function Dolfijnenrace({ spel, bron, avatar, leerjaar, onEinde }: ArcadeP
   );
 }
 
-/** Balk bovenaan: waar zijn de dolfijn en de zeemeermin? */
+/** Balk op de bodem: waar zijn de dolfijn en de zeemeermin? */
 function raceBalk(ctx: CanvasRenderingContext2D, dol: number, zm: number, avatarImg: HTMLImageElement) {
   const L = 36;
   const R = B - 50;
-  const Y = 34;
+  const Y = H - 34;
   ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
   ctx.beginPath();
-  ctx.roundRect(10, 8, B - 20, 54, 27);
+  ctx.roundRect(10, Y - 26, B - 20, 54, 27);
   ctx.fill();
   // stukken van de wereld
   ZONES.forEach((z, i) => {
