@@ -57,6 +57,15 @@ export function Torenbouwer({ bron, avatar, leerjaar, onEinde }: ArcadeProps) {
     if (k === ' ' || k === 'ArrowDown' || k === 'Enter') laatVallen();
   });
 
+  /** Een hartje kwijt: bij een fout antwoord of een blok dat naast de toren valt. */
+  function verliesHartje(x: number, y: number, tekstje: string) {
+    if (s.klaar) return;
+    s.hartjes--;
+    geluid.au();
+    s.zweef.push({ x, y, tekst: tekstje, leven: 1.2, kleur: '#ef476f' });
+    if (s.hartjes <= 0) stoppen('Oei, je hartjes zijn op!');
+  }
+
   function stoppen(reden: string) {
     if (s.klaar) return;
     s.klaar = true;
@@ -77,7 +86,9 @@ export function Torenbouwer({ bron, avatar, leerjaar, onEinde }: ArcadeProps) {
       if (s.vallend.y >= doelY) {
         const onder = s.toren.length ? s.toren[s.toren.length - 1].x : B / 2;
         const verschil = Math.abs(s.vallend.x - onder);
-        if (s.toren.length === 0 || verschil < BLOK_B * 0.7) {
+        // Zoals in het echt: steekt het midden van het blok voorbij de rand van het
+        // blok eronder, dan tuimelt het eraf (en kost het een hartje).
+        if (s.toren.length === 0 || verschil <= BLOK_B / 2) {
           s.toren.push({ x: s.vallend.x, kleur: s.vallend.kleur });
           const perfect = verschil < 8;
           const p = 10 + (perfect ? 10 : 0) + s.toren.length;
@@ -87,10 +98,7 @@ export function Torenbouwer({ bron, avatar, leerjaar, onEinde }: ArcadeProps) {
           s.zweef.push({ x: s.vallend.x, y: doelY - 10, tekst: perfect ? `PERFECT! +${p}` : `+${p}`, leven: 1, kleur: perfect ? '#ffd23f' : '#fff' });
         } else {
           s.tuimel.push({ x: s.vallend.x, y: doelY, vy: 0, draai: 0, kleur: s.vallend.kleur });
-          s.hartjes--;
-          geluid.au();
-          s.zweef.push({ x: s.vallend.x, y: doelY, tekst: 'Oeps!', leven: 1, kleur: '#ef476f' });
-          if (s.hartjes <= 0) stoppen('Oei, drie blokken gevallen!');
+          verliesHartje(s.vallend.x, doelY, 'Oeps! −❤️');
         }
         s.vallend = null;
       }
@@ -180,7 +188,7 @@ export function Torenbouwer({ bron, avatar, leerjaar, onEinde }: ArcadeProps) {
             ⬇️ Laat vallen
           </button>
         </div>
-        <p className="klein bediening-hulp">Tik op het speelveld of druk op spatie om het blok te laten vallen</p>
+        <p className="klein bediening-hulp">Tik op het speelveld of druk op spatie om het blok te laten vallen. Een fout antwoord of een blok naast de toren kost een hartje.</p>
       </div>
       <Opdrachtpaneel
         bron={bron}
@@ -188,7 +196,8 @@ export function Torenbouwer({ bron, avatar, leerjaar, onEinde }: ArcadeProps) {
         beloningTekst="Je krijgt een blok!"
         gepauzeerd={hud.klaarVoorBlok}
         onAntwoord={(ok) => {
-          if (!ok || s.klaar) return;
+          if (s.klaar) return;
+          if (!ok) return verliesHartje(B / 2, haakY() + 60, 'Fout antwoord −❤️');
           s.nr++;
           s.haak = { kleur: KLEUREN[s.nr % KLEUREN.length] };
         }}
