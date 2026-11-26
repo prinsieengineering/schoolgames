@@ -1,4 +1,5 @@
 // Tekenfuncties voor de arcade: monsters, sterretjes, bellen, "ploef"-wolkjes.
+import { getalbeeld, hoeveelheid } from '../../core/getalbeeld';
 
 import { B, H } from './engine';
 
@@ -139,6 +140,32 @@ export function labelGrootte(t: string, max: number, ruimte: number) {
     else if (c.codePointAt(0) !== 0x200d && c.codePointAt(0) !== 0xfe0f) eenheden += 1; // geen ZWJ of variatieteken
   }
   return Math.min(max, ruimte / Math.max(1, eenheden));
+}
+
+/**
+ * Antwoordlabel op het canvas. Een hoeveelheid ("🐟🐟🐟") wordt als getalbeeld getekend
+ * (twee rijen, eerst boven aangevuld; zie core/getalbeeld.ts), andere tekst zo groot mogelijk binnen `ruimte`.
+ */
+export function label(ctx: CanvasRenderingContext2D, t: string, x: number, y: number, max: number, ruimte: number, kleur = '#fff', rand: string = 'rgba(0,0,0,0.45)') {
+  const h = hoeveelheid(t);
+  if (!h) return tekst(ctx, t, x, y, labelGrootte(t, max, ruimte), kleur, rand);
+  const velden = getalbeeld(h.aantal);
+  const tussen = 4;
+  const rijen = velden.reduce((s, v) => s + v.rijen, 0);
+  const breedste = Math.max(...velden.map((v) => v.kolommen));
+  const cel = Math.min(ruimte / Math.max(3, breedste), (max * 1.8 - tussen * (velden.length - 1)) / rijen, max * 0.75);
+  // Links uitgelijnd zoals in de klas; het geheel staat gecentreerd op (x, y).
+  const links = x - (breedste * cel) / 2;
+  let top = y - (rijen * cel + tussen * (velden.length - 1)) / 2;
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = `${cel * 0.85}px serif`;
+  for (const v of velden) {
+    for (const vk of v.vakjes) ctx.fillText(h.emoji, links + (vk.x + 0.5) * cel, top + (vk.y + 0.5) * cel + cel * 0.05);
+    top += v.rijen * cel + tussen;
+  }
+  ctx.restore();
 }
 
 export function tekst(ctx: CanvasRenderingContext2D, t: string, x: number, y: number, grootte: number, kleur = '#fff', rand = 'rgba(0,0,0,0.45)') {

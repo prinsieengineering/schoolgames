@@ -730,12 +730,27 @@ h3 {
   font-size: 1.8rem;
   gap: 8px 16px;
 }
-.tel-groep {
-  display: flex;
-  gap: 4px;
+/* Getalbeeld: twee rijen, eerst boven aangevuld; per tiental een blok */
+.getalbeeld {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4em;
+  line-height: 1;
 }
-.tel-groep span {
+.getalveld {
+  display: inline-grid;
+  gap: 0.15em;
+}
+.getalveld .vakje {
+  width: 1.2em;
+  height: 1.2em;
+  display: grid;
+  place-items: center;
   animation: plop 0.35s both;
+}
+.getalbeeld.klein {
+  font-size: 1.6rem;
 }
 @keyframes plop {
   from {

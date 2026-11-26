@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Vraag } from '../../core/types';
 import { B, H, bereidCanvas, canvasPunt, klem, tempo, useSpellus, useToetsen } from '../kern/engine';
-import { ploef, tekenDeeltjes, tekenZweef, tekst, updateDeeltjes, laadBeeld, type Deeltje, type Zweef, labelGrootte } from '../kern/teken';
+import { ploef, tekenDeeltjes, tekenZweef, tekst, updateDeeltjes, laadBeeld, type Deeltje, type Zweef, label } from '../kern/teken';
 import { Hud, VraagBalk, tijdTekst, type ArcadeProps } from '../kern/ui';
 import { avatarUrl } from '../../gebruikers/avatar';
 import { geluid } from '../../core/geluid';
@@ -187,8 +187,7 @@ export function Rekenrace({ spel, bron, avatar, leerjaar, onEinde }: ArcadeProps
         ctx.fill();
         ctx.stroke();
         if (lab !== null) {
-          const grootte = labelGrootte(lab, 26, 110);
-          tekst(ctx, lab, x, p.y - 10, grootte, '#2d2a4a', '');
+          label(ctx, lab, x, p.y - 10, 26, 110, '#2d2a4a', '');
         }
       });
     }

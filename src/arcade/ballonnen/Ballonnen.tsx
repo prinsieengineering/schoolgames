@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Vraag } from '../../core/types';
 import { B, H, bereidCanvas, canvasPunt, klem, tempo, useSpellus, useToetsen } from '../kern/engine';
-import { lucht, ploef, tekenDeeltjes, tekenZweef, tekst, updateDeeltjes, laadBeeld, type Deeltje, type Zweef, labelGrootte } from '../kern/teken';
+import { lucht, ploef, tekenDeeltjes, tekenZweef, tekst, updateDeeltjes, laadBeeld, type Deeltje, type Zweef, label } from '../kern/teken';
 import { Hud, HoudKnop, VraagBalk, tijdTekst, type ArcadeProps } from '../kern/ui';
 import { avatarUrl } from '../../gebruikers/avatar';
 import { geluid } from '../../core/geluid';
@@ -216,8 +216,7 @@ export function Ballonnen({ spel, bron, avatar, leerjaar, onEinde }: ArcadeProps
       ctx.beginPath();
       ctx.ellipse(b.x - 16, b.y - 16, 9, 13, -0.5, 0, Math.PI * 2);
       ctx.fill();
-      const grootte = labelGrootte(b.tekst, 30, 150);
-      tekst(ctx, b.tekst, b.x, b.y + 2, grootte, '#fff', 'rgba(0,0,0,0.5)');
+      label(ctx, b.tekst, b.x, b.y + 2, 30, 150, '#fff', 'rgba(0,0,0,0.5)');
     }
     for (const p of s.pijlen) {
       ctx.strokeStyle = '#555';
