@@ -29,7 +29,7 @@ export function spreek(tekst: string, taal: Taal = 'nl-BE') {
   if (!kanVoorlezen() || !tekst) return;
   speechSynthesis.cancel();
   // Breuken als "3/4" voorlezen als "3 op 4" (Vlaams) of "trois quarts" laten we aan de stem.
-  const zin = taal === 'nl-BE' ? tekst.replace(/(\d+)\/(\d+)/g, '$1 op $2').replace(/×/g, ' maal ').replace(/(\d)\s*:\s*(\d)/g, '$1 gedeeld door $2') : tekst;
+  const zin = taal === 'nl-BE' ? tekst.replace(/€\s?(\d+),(\d{2})/g, '$1 euro $2').replace(/€\s?(\d+)/g, '$1 euro').replace(/cm²/g, 'vierkante centimeter').replace(/m²/g, 'vierkante meter').replace(/(\d+)\/(\d+)/g, '$1 op $2').replace(/×/g, ' maal ').replace(/(\d)\s*:\s*(\d)/g, '$1 gedeeld door $2') : tekst;
   const u = new SpeechSynthesisUtterance(zin);
   u.lang = taal;
   const stem = zoekStem(taal);

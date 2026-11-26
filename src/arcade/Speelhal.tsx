@@ -17,6 +17,8 @@ import { Ballonnen } from './ballonnen/Ballonnen';
 import { Torenbouwer } from './torenbouwer/Torenbouwer';
 import { Kikkersprong } from './kikkersprong/Kikkersprong';
 import { Touwtrekken, type DuoSpeler } from './touwtrekken/Touwtrekken';
+import { Mollenmep } from './mollenmep/Mollenmep';
+import { Rekenrace } from './rekenrace/Rekenrace';
 import { geluid } from '../core/geluid';
 import { standaardAvatar } from '../gebruikers/avatar';
 import { stopSpreken } from '../core/spraak';
@@ -35,6 +37,8 @@ export const ARCADE: ArcadeDef[] = [
   { id: 'monsterjacht', titel: 'Monsterjacht', icoon: '👾', soort: 'Verdien & speel', kleur: '#4b3fb5', beschrijving: 'Verdien sterretjes met juiste antwoorden en schiet de boze monsterjes weg!', Component: Monsterjacht },
   { id: 'ballonnen', titel: 'Ballonnen prikken', icoon: '🎈', soort: 'Antwoord = doelwit', kleur: '#ef476f', beschrijving: 'Prik de ballon met het juiste antwoord.', Component: Ballonnen },
   { id: 'kikkersprong', titel: 'Kikkersprong', icoon: '🐸', soort: 'Antwoord = doelwit', kleur: '#2a9fd6', beschrijving: 'Spring op de juiste waterlelie en steek de rivier over.', Component: Kikkersprong },
+  { id: 'mollenmep', titel: 'Mollenmep', icoon: '🔨', soort: 'Antwoord = doelwit', kleur: '#8b5a3c', beschrijving: 'Tik snel op de mol met het juiste antwoord!', Component: Mollenmep },
+  { id: 'rekenrace', titel: 'Rekenrace', icoon: '🏎️', soort: 'Antwoord = doelwit', kleur: '#d64545', beschrijving: 'Stuur je kart door de poort met het juiste antwoord voor een turbo!', Component: Rekenrace },
   { id: 'torenbouwer', titel: 'Torenbouwer', icoon: '🏗️', soort: 'Verdien & speel', kleur: '#ff8c42', beschrijving: 'Elk juist antwoord geeft een blok. Bouw de hoogste toren!', Component: Torenbouwer },
   { id: 'touwtrekken', titel: 'Touwtrekken', icoon: '🪢', soort: 'Samen spelen', kleur: '#2e9e5b', beschrijving: 'Met z’n tweeën op één toestel. Elk op zijn eigen niveau!' },
 ];

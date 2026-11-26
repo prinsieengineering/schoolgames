@@ -746,6 +746,57 @@ h3 {
   }
 }
 
+.visual-munten {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  max-width: 520px;
+}
+.visual-munten svg {
+  animation: plop 0.35s both;
+}
+.munt.groot {
+  width: 74px;
+}
+.munt.middel {
+  width: 62px;
+}
+.munt.klein {
+  width: 52px;
+}
+.briefje {
+  width: 130px;
+}
+.compact .munt.groot,
+.vraagbalk-visual .munt.groot {
+  width: 48px;
+}
+.compact .munt.middel,
+.vraagbalk-visual .munt.middel {
+  width: 40px;
+}
+.compact .munt.klein,
+.vraagbalk-visual .munt.klein {
+  width: 34px;
+}
+.compact .briefje,
+.vraagbalk-visual .briefje {
+  width: 80px;
+}
+.vraagbalk-visual .visual-munten {
+  max-width: 240px;
+  gap: 4px;
+}
+.visual-rechthoek {
+  width: 280px;
+}
+.compact .visual-rechthoek,
+.vraagbalk-visual .visual-rechthoek {
+  width: 170px;
+}
+
 .opties {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

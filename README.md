@@ -81,15 +81,15 @@ Het spel verschijnt dan vanzelf in de wereld van dat leerjaar, **en** het is met
 ### Een nieuw arcadespel toevoegen
 Maak een map in `src/arcade/`, schrijf een component met de `ArcadeProps` uit `kern/ui.tsx`, en voeg het toe aan de lijst `ARCADE` in `Speelhal.tsx`.
 
-## Wat zit erin (versie 0.1)
+## Wat zit erin
 
 | Leerjaar | Spelletjes |
 |---|---|
-| 1e 🌳 | Tel de diertjes · Plus- en minbos · Woord en plaatje |
-| 2e 🏖️ | Tafelschelpen · Hoe laat is het? |
-| 3e ⛰️ | Tafelklim · Pizza-breuken · Petit français (facultatief) |
-| 4e 🏰 | Breukenduel · d of t? |
-| 5e 🚂 | Mots magiques · Procentenmarkt |
-| 6e 🚀 | Kortingsjager · Être ou avoir ? |
+| 1e 🌳 | Tel de diertjes · Plus- en minbos · Woord en plaatje · Klankenjacht |
+| 2e 🏖️ | Tafelschelpen · Hoe laat is het? · Strandwinkel |
+| 3e ⛰️ | Tafelklim · Pizza-breuken · Ei of ij? Au of ou? · Petit français (facultatief) |
+| 4e 🏰 | Breukenduel · Kommakompas · d of t? |
+| 5e 🚂 | Mots magiques · Procentenmarkt · 't Kofschip |
+| 6e 🚀 | Kortingsjager · Oppervlakte-ontdekker · Être ou avoir ? |
 
-**Speelhal:** 👾 Monsterjacht · 🎈 Ballonnen prikken · 🐸 Kikkersprong · 🏗️ Torenbouwer · 🪢 Touwtrekken (2 spelers)
+**Speelhal:** 👾 Monsterjacht · 🎈 Ballonnen prikken · 🐸 Kikkersprong · 🔨 Mollenmep · 🏎️ Rekenrace · 🏗️ Torenbouwer · 🪢 Touwtrekken (2 spelers)

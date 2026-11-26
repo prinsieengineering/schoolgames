@@ -25,6 +25,7 @@ export const VAKKEN: Record<Vak, { naam: string; icoon: string }> = {
   klok: { naam: 'Klok', icoon: '🕐' },
   breuken: { naam: 'Breuken', icoon: '🍕' },
   procenten: { naam: 'Procenten', icoon: '％' },
+  meten: { naam: 'Meten & geld', icoon: '📏' },
   lezen: { naam: 'Lezen', icoon: '📖' },
   spelling: { naam: 'Spelling', icoon: '✏️' },
   frans: { naam: 'Frans', icoon: '🇫🇷' },

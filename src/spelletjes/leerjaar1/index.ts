@@ -2,6 +2,7 @@
 import type { SpelDef } from '../../core/types';
 import { getalOpties, kies, neem, opties, rand } from '../../core/random';
 import { LEESWOORDEN, TELDINGEN } from '../../inhoud/woorden';
+import { KLANKWOORDEN, KLINKERS, MEDEKLINKERS } from '../../inhoud/klanken';
 
 const telDiertjes: SpelDef = {
   id: 'tel-de-diertjes',
@@ -85,4 +86,34 @@ const woordPlaatje: SpelDef = {
   },
 };
 
-export const LEERJAAR1: SpelDef[] = [telDiertjes, plusMinBos, woordPlaatje];
+// ---------- Klankenjacht ----------
+const klankenjacht: SpelDef = {
+  id: 'klankenjacht',
+  titel: 'Klankenjacht',
+  beschrijving: 'Luister goed: welke klank hoor je?',
+  icoon: '👂',
+  leerjaar: 1,
+  vak: 'lezen',
+  niveaus: ['beginklank', 'eindklank', 'middenklank'],
+  voorlezen: true,
+  doelen: ['Auditieve analyse: klanken in een woord herkennen (begin, eind, midden)'],
+  maak(n) {
+    const w = kies(KLANKWOORDEN);
+    const plek = ['begint', 'eindigt', 'hoor je in het midden van'][n];
+    const antwoord = w.klanken[[0, 2, 1][n]];
+    const pool = n === 2 ? KLINKERS : MEDEKLINKERS;
+    return {
+      sleutel: `${w.woord}-${n}`,
+      prompt: n === 2 ? 'Welke klank hoor je in het midden?' : `Met welke klank ${plek} het woord?`,
+      voorlezen: n === 2 ? `Luister: ${w.woord}. Welke klank hoor je in het midden van ${w.woord}?` : `Luister: ${w.woord}. Met welke klank ${plek} ${w.woord}?`,
+      visual: { type: 'emoji', tekst: w.emoji },
+      antwoord,
+      opties: opties(antwoord, neem(pool.filter((k) => k !== antwoord), 3)),
+      uitspraak: { tekst: w.woord, taal: 'nl-BE' },
+      uitleg: `${w.woord}: ${w.klanken.join(' - ')}`,
+    };
+  },
+};
+
+export const LEERJAAR1: SpelDef[] = [telDiertjes, plusMinBos, woordPlaatje, klankenjacht];
+

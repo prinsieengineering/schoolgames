@@ -1,4 +1,4 @@
-﻿// 🚀 6e leerjaar: Het Ruimtestation
+// 🚀 6e leerjaar: Het Ruimtestation
 import type { SpelDef } from '../../core/types';
 import { getalOpties, kies, komma, neem, opties, rand } from '../../core/random';
 import { AVOIR, AVOIR_ZINNEN, BEGROETINGEN, ETRE, ETRE_ZINNEN } from '../../inhoud/frans';
@@ -97,4 +97,63 @@ const etreAvoir: SpelDef = {
   },
 };
 
-export const LEERJAAR6: SpelDef[] = [kortingsjager, etreAvoir];
+// ---------- Oppervlakte-ontdekker ----------
+const OMZETTINGEN: [string, string, number][] = [
+  ['m', 'cm', 100], ['km', 'm', 1000], ['m', 'mm', 1000], ['cm', 'mm', 10],
+  ['kg', 'g', 1000], ['l', 'cl', 100], ['l', 'ml', 1000], ['uur', 'minuten', 60],
+];
+
+const oppervlakte: SpelDef = {
+  id: 'oppervlakte-ontdekker',
+  titel: 'Oppervlakte-ontdekker',
+  beschrijving: 'Omtrek, oppervlakte en maateenheden omzetten.',
+  icoon: '📐',
+  leerjaar: 6,
+  vak: 'meten',
+  niveaus: ['omtrek', 'oppervlakte', 'omzetten'],
+  doelen: ['Meten: omtrek en oppervlakte van rechthoeken; herleiden van maateenheden'],
+  maak(n) {
+    if (n === 2) {
+      const [van, naar, factor] = kies(OMZETTINGEN);
+      const halve = Math.random() < 0.4 && factor >= 100;
+      const waarde = halve ? rand(1, 9) + 0.5 : rand(2, 12);
+      const uitkomst = Math.round(waarde * factor);
+      return {
+        sleutel: `${waarde}${van}>${naar}`,
+        prompt: `${komma(waarde)} ${van} = ? ${naar}`,
+        voorlezen: `${komma(waarde)} ${van} is hoeveel ${naar}?`,
+        antwoord: String(uitkomst),
+        opties: getalOpties(uitkomst, 1, 4, [uitkomst * 10, Math.round(uitkomst / 10), Math.round(waarde * (factor === 60 ? 100 : factor / 10))].filter((x) => x > 0 && x !== uitkomst)),
+        invoer: 'getal',
+        uitleg: `1 ${van} = ${factor} ${naar}, dus ${komma(waarde)} × ${factor} = ${uitkomst}.`,
+      };
+    }
+    const b = rand(2, 12);
+    const h = rand(2, 9);
+    const eenheid = kies(['cm', 'm']);
+    if (n === 0) {
+      const omtrek = 2 * (b + h);
+      return {
+        sleutel: `omtrek${b}x${h}`,
+        prompt: `Wat is de omtrek van deze rechthoek (in ${eenheid})?`,
+        visual: { type: 'rechthoek', breedte: b, hoogte: h, eenheid },
+        antwoord: String(omtrek),
+        opties: getalOpties(omtrek, 2, 4, [b * h, b + h, omtrek + 2]),
+        invoer: 'getal',
+        uitleg: `Omtrek = alle zijden samen: ${b} + ${h} + ${b} + ${h} = ${omtrek} ${eenheid}.`,
+      };
+    }
+    const opp = b * h;
+    return {
+      sleutel: `opp${b}x${h}`,
+      prompt: `Wat is de oppervlakte van deze rechthoek (in ${eenheid}²)?`,
+      visual: { type: 'rechthoek', breedte: b, hoogte: h, eenheid },
+      antwoord: String(opp),
+      opties: getalOpties(opp, 3, 4, [2 * (b + h), b + h, opp + b]),
+      invoer: 'getal',
+      uitleg: `Oppervlakte = lengte × breedte: ${b} × ${h} = ${opp} ${eenheid}². Tel gerust de vakjes!`,
+    };
+  },
+};
+
+export const LEERJAAR6: SpelDef[] = [kortingsjager, oppervlakte, etreAvoir];

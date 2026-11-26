@@ -1,7 +1,8 @@
-﻿// 🚂 5e leerjaar: De Franse Trein
+// 🚂 5e leerjaar: De Franse Trein
 import type { SpelDef } from '../../core/types';
 import { getalOpties, kies, neem, opties, rand } from '../../core/random';
 import { FRANS, type FransWoord } from '../../inhoud/frans';
+import { KOFSCHIP } from '../../inhoud/spelling';
 
 const motsMagiques: SpelDef = {
   id: 'mots-magiques',
@@ -75,4 +76,49 @@ const procentenmarkt: SpelDef = {
   },
 };
 
-export const LEERJAAR5: SpelDef[] = [motsMagiques, procentenmarkt];
+// ---------- 't Kofschip ----------
+const ONDERWERPEN = [['Gisteren', 'ik'], ['Vorige week', 'hij'], ['Gisteren', 'zij'], ['Vroeger', 'mijn opa'], ['Vanmorgen', 'de juf']];
+const ZINSDELEN: Record<string, string> = {
+  werken: 'hard in de tuin', fietsen: 'naar school', maken: 'een mooie tekening', lachen: 'om de grap', stoppen: 'met spelen',
+  koken: 'spaghetti', dansen: 'op het feest', hopen: 'op mooi weer', poetsen: 'de tanden', blaffen: 'naar de postbode',
+  kloppen: 'op de deur', praten: 'met de buren', spelen: 'in het park', leren: 'de tafels', bouwen: 'een zandkasteel',
+  huilen: 'om de kapotte vaas', wonen: 'in Gent', schilderen: 'de muur', zeilen: 'op de zee', regenen: 'heel hard',
+  bellen: 'naar oma', noemen: 'de hond Max', wachten: 'op de bus', branden: 'de kaarsjes', leven: 'heel gezond',
+  reizen: 'naar Frankrijk', verven: 'het hek', beloven: 'te helpen', verhuizen: 'naar een nieuw huis', blozen: 'van verlegenheid',
+};
+
+const kofschip: SpelDef = {
+  id: 'kofschip',
+  titel: "'t Kofschip",
+  beschrijving: 'Verleden tijd: -te of -de?',
+  icoon: '⛵',
+  leerjaar: 5,
+  vak: 'spelling',
+  niveaus: ['-te', '-te of -de', 'valkuilen (v en z)'],
+  doelen: ["Werkwoordspelling verleden tijd van zwakke werkwoorden ('t kofschip)"],
+  maak(n) {
+    const lijst = n === 0 ? KOFSCHIP.filter((w) => w.uitgang === 'te') : n === 1 ? KOFSCHIP.filter((w) => !w.valkuil) : KOFSCHIP;
+    const w = n === 2 && Math.random() < 0.5 ? kies(KOFSCHIP.filter((x) => x.valkuil)) : kies(lijst);
+    const meervoud = n === 2 && Math.random() < 0.4;
+    const [tijd, wie] = meervoud ? [kies(['Gisteren', 'Vorig jaar']), 'wij'] : kies(ONDERWERPEN);
+    const regen = w.inf === 'regenen';
+    const onderwerp = regen ? 'het' : wie;
+    const n2 = meervoud && !regen ? 'n' : '';
+    const vorm = (u: string) => w.stam + u + n2;
+    const antwoord = vorm(w.uitgang);
+    const fout = [vorm(w.uitgang === 'te' ? 'de' : 'te'), w.stam.endsWith(w.uitgang[0]) ? vorm(w.uitgang.slice(1)) : vorm(w.uitgang[0] + w.uitgang)];
+    const zin = `${tijd} ___ ${onderwerp} ${ZINSDELEN[w.inf] ?? ''}.`.replace(/\s+\./, '.');
+    return {
+      sleutel: `${w.inf}${n2}`,
+      prompt: `${zin}  (${w.inf})`,
+      voorlezen: `${zin.replace('___', 'blanco')} Werkwoord: ${w.inf}.`,
+      antwoord,
+      opties: opties(antwoord, fout, 3),
+      uitleg: w.valkuil
+        ? `Valkuil! Je hoort ${w.stam}, maar in "${w.inf}" staat een ${w.inf.includes('v') ? 'v' : 'z'}. Die zit niet in 't kofschip, dus: ${antwoord}.`
+        : `De stam is "${w.stam}". Eindigt die op een letter van 't kofschip (t, k, f, s, ch, p)? Dan -te, anders -de. → ${antwoord}`,
+    };
+  },
+};
+
+export const LEERJAAR5: SpelDef[] = [motsMagiques, procentenmarkt, kofschip];
