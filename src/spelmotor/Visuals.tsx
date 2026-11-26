@@ -119,20 +119,16 @@ function Rechthoek({ breedte, hoogte, eenheid }: { breedte: number; hoogte: numb
   );
 }
 
-/** Een hoeveelheid als getalbeeld: dobbelsteen tot 6, daarna tienvelden. */
+/** Een hoeveelheid als getalbeeld: twee rijen, eerst boven aangevuld (zie core/getalbeeld.ts). */
 export function Getalbeeld({ emoji, aantal, klein = false }: { emoji: string; aantal: number; klein?: boolean }) {
   const velden = getalbeeld(aantal);
   return (
     <span className={`getalbeeld ${klein ? 'klein' : ''}`} role="img" aria-label={`${aantal}`}>
       {velden.map((v, i) => (
-        <span
-          key={i}
-          className={`getalveld ${v.kader ? 'tienveld' : 'dobbelsteen'}`}
-          style={{ gridTemplateColumns: `repeat(${v.kolommen}, 1fr)`, gridTemplateRows: `repeat(${v.rijen}, 1fr)` }}
-        >
+        <span key={i} className="getalveld" style={{ gridTemplateColumns: `repeat(${v.kolommen}, 1fr)`, gridTemplateRows: `repeat(${v.rijen}, 1fr)` }}>
           {v.vakjes.map((vk, j) => (
-            <span key={j} className={`vakje ${vk.vol ? 'vol' : ''}`} style={{ gridColumn: vk.x + 1, gridRow: vk.y + 1, animationDelay: `${(i * 10 + j) * 40}ms` }}>
-              {vk.vol ? emoji : ''}
+            <span key={j} className="vakje" style={{ gridColumn: vk.x + 1, gridRow: vk.y + 1, animationDelay: `${(i * 10 + j) * 40}ms` }}>
+              {emoji}
             </span>
           ))}
         </span>

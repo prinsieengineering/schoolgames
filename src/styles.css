@@ -730,49 +730,27 @@ h3 {
   font-size: 1.8rem;
   gap: 8px 16px;
 }
-/* Getalbeeld: dobbelsteen (1-6) of tienveld (2 x 5) */
+/* Getalbeeld: twee rijen, eerst boven aangevuld; per tiental een blok */
 .getalbeeld {
   display: inline-flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.35em;
+  align-items: flex-start;
+  gap: 0.4em;
   line-height: 1;
 }
 .getalveld {
   display: inline-grid;
-  gap: 0.12em;
+  gap: 0.15em;
 }
 .getalveld .vakje {
-  width: 1.25em;
-  height: 1.25em;
+  width: 1.2em;
+  height: 1.2em;
   display: grid;
   place-items: center;
-}
-.getalveld .vakje.vol {
   animation: plop 0.35s both;
-}
-.getalveld.dobbelsteen {
-  padding: 0.2em;
-  border-radius: 0.35em;
-  background: rgba(255, 255, 255, 0.6);
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.08);
-}
-.getalveld.tienveld {
-  gap: 0;
-  border: 2px solid #4b3fb5;
-  border-radius: 0.2em;
-  background: #fff;
-}
-.getalveld.tienveld .vakje {
-  border: 1px solid rgba(75, 63, 181, 0.35);
 }
 .getalbeeld.klein {
   font-size: 1.6rem;
-}
-.getalbeeld.klein .getalveld.dobbelsteen {
-  background: transparent;
-  box-shadow: none;
-  padding: 0;
 }
 @keyframes plop {
   from {

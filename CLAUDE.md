@@ -30,7 +30,7 @@ Leerspelletjes voor kinderen van de 3e kleuterklas (`leerjaar: 0`) tot het 6e le
 - Nieuw arcadespel = map in `src/arcade/`, component met `ArcadeProps` (`kern/ui.tsx`), toevoegen aan `ARCADE` in `Speelhal.tsx`. Speltoestand in `useRef`, HUD-state enkel bijwerken als iets verandert. Test ook met React StrictMode (effects lopen dubbel in dev).
 - Badges: een object toevoegen in `src/core/badges.ts`. Beloon inzet en vooruitgang, nooit straffen.
 - Toon een leerjaar altijd met `leerjaarNaam()` / `leerjaarKort()` uit `src/wereld/werelden.ts` (0 = 3e kleuterklas), nooit met `${lj}e leerjaar`.
-- **Hoeveelheden** toon je altijd als getalbeeld (1-6 dobbelsteen, vanaf 7 tienvelden van 2×5), via `src/core/getalbeeld.ts`. Gebruik `visual: { type: 'tel' }` of een antwoord met hetzelfde plaatje herhaald (bv. `'🐟'.repeat(4)`): quizknoppen en arcadelabels (`label()` in `kern/teken.ts`) tekenen dat dan vanzelf als getalbeeld. Nooit een los rijtje.
+- **Hoeveelheden** toon je altijd als getalbeeld (twee rijen, van links naar rechts en eerst boven aangevuld: 3 = ●● boven ●, 10 = 2×5; per tiental een nieuw blok), via `src/core/getalbeeld.ts`. Gebruik `visual: { type: 'tel' }` of een antwoord met hetzelfde plaatje herhaald (bv. `'🐟'.repeat(4)`): quizknoppen en arcadelabels (`label()` in `kern/teken.ts`) tekenen dat dan vanzelf als getalbeeld. Nooit een los rijtje.
 - Bediening altijd met aanraken én toetsenbord (tablet en pc).
 - Enkel vrij bruikbare tekeningen en geluiden (bij voorkeur CC0); vermeld de bron in de README.
 

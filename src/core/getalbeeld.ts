@@ -1,47 +1,31 @@
-// Getalbeelden: hoeveelheden altijd in een vaste structuur tonen, zoals in de klas.
-//  - 1 tot 6: dobbelsteenbeeld
-//  - 7 en meer: tienveld (2 rijen van 5, eerst de bovenste rij vol), per 10 een nieuw tienveld
+// Getalbeelden: hoeveelheden altijd in dezelfde structuur tonen, zoals in de klas.
+// Twee rijen, van links naar rechts aangevuld: eerst boven, dan onder
+// (1 = ●, 2 = ● boven ●, 3 = ●● boven ●, ..., 10 = twee rijen van 5).
+// Boven 10 komt er per tiental een nieuw blok onder.
 // Gebruikt door de quiz (Visuals.tsx) én de arcade (kern/teken.ts), zodat het overal hetzelfde is.
 
 export interface Vakje {
-  /** Kolom en rij in het veld (0-gebaseerd). */
+  /** Kolom en rij in het blok (0-gebaseerd). */
   x: number;
   y: number;
-  vol: boolean;
 }
 
 export interface Veld {
   kolommen: number;
   rijen: number;
   vakjes: Vakje[];
-  /** Tienveld: lege vakjes en een kader tekenen. */
-  kader: boolean;
 }
-
-/** Dobbelsteenposities op een 3×3 rooster. */
-const DOBBELSTEEN: [number, number][][] = [
-  [],
-  [[1, 1]],
-  [[0, 0], [2, 2]],
-  [[0, 0], [1, 1], [2, 2]],
-  [[0, 0], [2, 0], [0, 2], [2, 2]],
-  [[0, 0], [2, 0], [1, 1], [0, 2], [2, 2]],
-  [[0, 0], [0, 1], [0, 2], [2, 0], [2, 1], [2, 2]],
-];
 
 export function getalbeeld(aantal: number): Veld[] {
   const n = Math.max(0, Math.floor(aantal));
-  if (n <= 6) {
-    return [{ kolommen: 3, rijen: 3, kader: false, vakjes: DOBBELSTEEN[n].map(([x, y]) => ({ x, y, vol: true })) }];
-  }
   const velden: Veld[] = [];
   for (let start = 0; start < n; start += 10) {
     const hier = Math.min(10, n - start);
+    // Bolletje i: kolom i/2, afwisselend boven en onder -> boven ceil(n/2), onder floor(n/2).
     velden.push({
-      kolommen: 5,
-      rijen: 2,
-      kader: true,
-      vakjes: Array.from({ length: 10 }, (_, i) => ({ x: i % 5, y: Math.floor(i / 5), vol: i < hier })),
+      kolommen: Math.ceil(hier / 2),
+      rijen: hier > 1 ? 2 : 1,
+      vakjes: Array.from({ length: hier }, (_, i) => ({ x: Math.floor(i / 2), y: i % 2 })),
     });
   }
   return velden;
