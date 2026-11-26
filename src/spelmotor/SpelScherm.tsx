@@ -1,7 +1,7 @@
 ﻿// Het gewone quizscherm: kies een niveau, beantwoord 10 vragen, krijg je beloning.
 
 import { useCallback, useRef, useState } from 'react';
-import type { Beloning, SpelDef, Vraag } from '../core/types';
+import type { Beloning, SpelDef, SpelKeuze, Vraag } from '../core/types';
 import { useActief } from '../gebruikers/ProfielContext';
 import { niveauOpen, verwerkRonde } from '../core/beloningen';
 import { geluid } from '../core/geluid';
@@ -11,10 +11,15 @@ import { VraagKaart } from './VraagKaart';
 import { Resultaat } from './Resultaat';
 import { AntwoordTekst } from './Visuals';
 import { wereldVan } from '../wereld/werelden';
+import { TafelKiezer } from './TafelKiezer';
+import { bewaarTafelKeuze, tafelKeuzeTekst, tafelKeuzeVan } from '../core/tafels';
 
 const VRAGEN_PER_RONDE = 10;
 
-type Fase = { naam: 'niveau' } | { naam: 'spelen'; niveau: number; poging: number } | { naam: 'klaar'; niveau: number; juist: number; beloning: Beloning };
+type Fase =
+  | { naam: 'niveau' }
+  | { naam: 'spelen'; niveau: number; keuze?: SpelKeuze; poging: number }
+  | { naam: 'klaar'; niveau: number; keuze?: SpelKeuze; juist: number; beloning: Beloning };
 
 export function SpelScherm({ spel, terug }: { spel: SpelDef; terug: () => void }) {
   const { profiel } = useActief();
@@ -39,26 +44,27 @@ export function SpelScherm({ spel, terug }: { spel: SpelDef; terug: () => void }
         <span className="muntjes">🪙 {profiel.muntjes}</span>
       </div>
 
-      {fase.naam === 'niveau' && <NiveauKeuze spel={spel} onKies={(n) => setFase({ naam: 'spelen', niveau: n, poging: Date.now() })} />}
+      {fase.naam === 'niveau' && <NiveauKeuze spel={spel} onKies={(n, keuze) => setFase({ naam: 'spelen', niveau: n, keuze, poging: Date.now() })} />}
       {fase.naam === 'spelen' && (
         <Ronde
           key={fase.poging}
           spel={spel}
           niveau={fase.niveau}
-          onKlaar={(juist, beloning) => setFase({ naam: 'klaar', niveau: fase.niveau, juist, beloning })}
+          keuze={fase.keuze}
+          onKlaar={(juist, beloning) => setFase({ naam: 'klaar', niveau: fase.niveau, keuze: fase.keuze, juist, beloning })}
         />
       )}
       {fase.naam === 'klaar' && (
         <Resultaat
-          titel={`${spel.titel} · ${spel.niveaus[fase.niveau]}`}
+          titel={`${spel.titel} · ${fase.keuze?.tafels ? `🎯 ${tafelKeuzeTekst(fase.keuze.tafels)}` : spel.niveaus[fase.niveau]}`}
           juist={fase.juist}
           totaal={VRAGEN_PER_RONDE}
           beloning={fase.beloning}
           knoppen={[
-            ...(fase.niveau + 1 < spel.niveaus.length && fase.beloning.sterren >= 2
+            ...(!fase.keuze && fase.niveau + 1 < spel.niveaus.length && fase.beloning.sterren >= 2
               ? [{ label: 'Volgend niveau ➜', actie: () => setFase({ naam: 'spelen', niveau: fase.niveau + 1, poging: Date.now() }), hoofd: true }]
               : []),
-            { label: '🔁 Nog eens', actie: () => setFase({ naam: 'spelen', niveau: fase.niveau, poging: Date.now() }), hoofd: fase.beloning.sterren < 2 },
+            { label: '🔁 Nog eens', actie: () => setFase({ naam: 'spelen', niveau: fase.niveau, keuze: fase.keuze, poging: Date.now() }), hoofd: !!fase.keuze || fase.beloning.sterren < 2 },
             { label: 'Niveaus', actie: () => setFase({ naam: 'niveau' }) },
             { label: 'Naar de wereld', actie: terug },
           ]}
@@ -68,8 +74,8 @@ export function SpelScherm({ spel, terug }: { spel: SpelDef; terug: () => void }
   );
 }
 
-function NiveauKeuze({ spel, onKies }: { spel: SpelDef; onKies: (n: number) => void }) {
-  const { profiel } = useActief();
+function NiveauKeuze({ spel, onKies }: { spel: SpelDef; onKies: (n: number, keuze?: SpelKeuze) => void }) {
+  const { profiel, bewaar } = useActief();
   const v = profiel.spellen[spel.id];
   return (
     <div className="niveau-keuze">
@@ -96,14 +102,30 @@ function NiveauKeuze({ spel, onKies }: { spel: SpelDef; onKies: (n: number) => v
           );
         })}
       </div>
+      {spel.tafelkeuze && (
+        <div className="paneel mijn-tafels">
+          <h3>🎯 Mijn tafels</h3>
+          <p className="klein">Vink zelf aan welke tafels je wil oefenen.</p>
+          <TafelKiezer waarde={tafelKeuzeVan(profiel)} onWijzig={(k) => bewaar(bewaarTafelKeuze(profiel, k))} />
+          <button
+            className="knop groot"
+            onClick={() => {
+              geluid.klik();
+              onKies(0, { tafels: tafelKeuzeVan(profiel) });
+            }}
+          >
+            Oefen {tafelKeuzeTekst(tafelKeuzeVan(profiel))} ➜
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
-function Ronde({ spel, niveau, onKlaar }: { spel: SpelDef; niveau: number; onKlaar: (juist: number, b: Beloning) => void }) {
+function Ronde({ spel, niveau, keuze, onKlaar }: { spel: SpelDef; niveau: number; keuze?: SpelKeuze; onKlaar: (juist: number, b: Beloning) => void }) {
   const { profiel, bewaar } = useActief();
   const gehad = useRef(new Set<string>());
-  const [vraag, setVraag] = useState<Vraag>(() => nieuweVraag(() => spel.maak(niveau), gehad.current));
+  const [vraag, setVraag] = useState<Vraag>(() => nieuweVraag(() => spel.maak(niveau, keuze), gehad.current));
   const [nr, setNr] = useState(1);
   const [juist, setJuist] = useState(0);
   const [reeks, setReeks] = useState(0);
@@ -124,15 +146,16 @@ function Ronde({ spel, niveau, onKlaar }: { spel: SpelDef; niveau: number; onKla
           totaal: VRAGEN_PER_RONDE,
           besteReeks: beste,
           foutSleutels: nieuweFouten,
+          eigenKeuze: !!keuze,
         });
         bewaar(nieuw);
         onKlaar(nieuwJuist, beloning);
         return;
       }
       setNr((n) => n + 1);
-      setVraag(nieuweVraag(() => spel.maak(niveau), gehad.current));
+      setVraag(nieuweVraag(() => spel.maak(niveau, keuze), gehad.current));
     },
-    [nr, profiel, spel, niveau, bewaar, onKlaar],
+    [nr, profiel, spel, niveau, keuze, bewaar, onKlaar],
   );
 
   const antwoord = useCallback(

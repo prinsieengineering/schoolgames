@@ -1,7 +1,7 @@
 // De vraagbron "leent" vragen uit een gewoon spelletje en past het niveau
 // automatisch aan: 4 juist na elkaar = niveau omhoog, 2 fout na elkaar = omlaag.
 
-import type { RondeResultaat, SpelDef, Vraag } from '../../core/types';
+import type { RondeResultaat, SpelDef, SpelKeuze, Vraag } from '../../core/types';
 import { isJuist } from '../../spelmotor/antwoord';
 
 export class Vraagbron {
@@ -17,13 +17,15 @@ export class Vraagbron {
   constructor(
     public spel: SpelDef,
     startNiveau: number,
+    /** Eigen keuze van het kind (bv. de tafels); geldt op elk niveau. */
+    public keuze?: SpelKeuze,
   ) {
     this.niveau = startNiveau;
   }
 
   volgende(): Vraag {
-    let v = this.spel.maak(this.niveau);
-    for (let i = 0; i < 12 && this.recent.includes(v.sleutel); i++) v = this.spel.maak(this.niveau);
+    let v = this.spel.maak(this.niveau, this.keuze);
+    for (let i = 0; i < 12 && this.recent.includes(v.sleutel); i++) v = this.spel.maak(this.niveau, this.keuze);
     this.recent.push(v.sleutel);
     if (this.recent.length > 6) this.recent.shift();
     return v;

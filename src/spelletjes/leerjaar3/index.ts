@@ -1,39 +1,27 @@
 // ⛰️ 3e leerjaar: De Tafelberg
-import type { SpelDef } from '../../core/types';
-import { breukTekst, getalOpties, kies, neem, opties, rand } from '../../core/random';
+import type { SpelDef, TafelKeuze } from '../../core/types';
+import { tafelVraag } from '../../core/tafels';
+import { breukTekst, kies, neem, opties, rand } from '../../core/random';
 import { FRANS, type FransWoord } from '../../inhoud/frans';
 import { AU_OU, EI_IJ } from '../../inhoud/spelling';
+
+const KLIM_NIVEAUS: TafelKeuze[] = [
+  { tafels: [1, 2, 3, 4, 5], soort: 'maal' },
+  { tafels: [6, 7, 8, 9, 10], soort: 'maal' },
+  { tafels: [2, 3, 4, 5, 6, 7, 8, 9, 10], soort: 'delen' },
+];
 
 const tafelklim: SpelDef = {
   id: 'tafelklim',
   titel: 'Tafelklim',
-  beschrijving: 'Alle maaltafels en deeltafels tot 10.',
+  beschrijving: 'Alle maaltafels en deeltafels tot 10. Of kies zelf je tafels!',
   icoon: '✖️',
   leerjaar: 3,
   vak: 'rekenen',
   niveaus: ['tafels 1 tot 5', 'tafels 6 tot 10', 'deeltafels'],
+  tafelkeuze: true,
   doelen: ['Maal- en deeltafels tot 10 automatiseren'],
-  maak(n) {
-    const t = n === 0 ? rand(1, 5) : rand(n === 1 ? 6 : 2, 10);
-    const a = rand(1, 10);
-    if (n === 2) {
-      return {
-        sleutel: `${a * t}:${t}`,
-        prompt: `${a * t} : ${t} = ?`,
-        antwoord: String(a),
-        opties: getalOpties(a, 2),
-        invoer: 'getal',
-      };
-    }
-    const uitkomst = a * t;
-    return {
-      sleutel: `${a}x${t}`,
-      prompt: `${a} × ${t} = ?`,
-      antwoord: String(uitkomst),
-      opties: getalOpties(uitkomst, 3, 4, [uitkomst + t, uitkomst - t, uitkomst + a]),
-      invoer: 'getal',
-    };
-  },
+  maak: (n, keuze) => tafelVraag(keuze?.tafels ?? KLIM_NIVEAUS[n], { spreiding: 3 }),
 };
 
 const pizzaBreuken: SpelDef = {
