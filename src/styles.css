@@ -1309,6 +1309,43 @@ h3 {
 .arcade-layout.kolom .canvas-houder {
   width: min(100%, calc(56vh * 0.75));
 }
+/* Groter speelveld (Dolfijnenrace): de vraag staat in het veld, dus er is meer plaats. */
+.arcade-layout.kolom.groot {
+  grid-template-columns: minmax(0, 680px);
+}
+.arcade-layout.kolom.groot .canvas-houder {
+  width: min(100%, calc(74vh * 0.75));
+}
+.vraag-in-veld {
+  position: absolute;
+  top: 1.2%;
+  left: 2%;
+  right: 2%;
+  z-index: 1;
+  max-height: 26%;
+}
+.vraag-in-veld .vraagbalk {
+  background: rgba(255, 255, 255, 0.93);
+  padding: 6px 10px;
+  gap: 8px;
+  max-height: 100%;
+  overflow: hidden;
+}
+.vraag-in-veld .vraagbalk-tekst {
+  font-size: clamp(1rem, 3vw, 1.45rem);
+}
+.vraag-in-veld .vraagbalk-visual .visual-tel {
+  font-size: clamp(1.4rem, 3.6vw, 2.1rem);
+  max-width: none;
+}
+.vraag-in-veld .vraagbalk-visual .visual-emoji {
+  font-size: 2.6rem;
+}
+.vraag-in-veld .vraagbalk-visual .visual-klok,
+.vraag-in-veld .vraagbalk-visual .visual-breuk {
+  width: 80px;
+  height: 80px;
+}
 .speelveld {
   width: 100%;
   height: 100%;
