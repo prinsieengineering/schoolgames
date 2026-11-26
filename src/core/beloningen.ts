@@ -73,12 +73,13 @@ export function verwerkRonde(p: Profiel, r: RondeResultaat): { profiel: Profiel;
       juist: 0,
       totaal: 0,
     });
-    sv.sterren[r.niveau] = Math.max(sv.sterren[r.niveau] ?? 0, sterren);
+    // Eigen keuze (bv. eigen tafels): wel XP en muntjes, geen sterren voor een niveau.
+    if (!r.eigenKeuze) sv.sterren[r.niveau] = Math.max(sv.sterren[r.niveau] ?? 0, sterren);
     sv.gespeeld++;
     sv.juist += r.juist;
     sv.totaal += r.totaal;
     // Doorzetter: vorige keer < 2 sterren op dit niveau, nu wel ≥ 2
-    if ((oud.spellen[r.id]?.sterren[r.niveau] ?? 0) < 2 && (oud.spellen[r.id]?.gespeeld ?? 0) > 0 && sterren >= 2) {
+    if (!r.eigenKeuze && (oud.spellen[r.id]?.sterren[r.niveau] ?? 0) < 2 && (oud.spellen[r.id]?.gespeeld ?? 0) > 0 && sterren >= 2) {
       nieuw.stats.tellers.doorzetter = (nieuw.stats.tellers.doorzetter ?? 0) + 1;
     }
   }

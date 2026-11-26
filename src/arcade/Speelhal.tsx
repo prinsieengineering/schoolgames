@@ -2,7 +2,7 @@
 // vragen komen uit de gewone spelletjes, op het niveau van het kind.
 
 import { useMemo, useState, type ComponentType } from 'react';
-import type { Beloning, Leerjaar, Profiel, SpelDef } from '../core/types';
+import type { Beloning, Leerjaar, Profiel, SpelDef, SpelKeuze } from '../core/types';
 import { useActief, useProfielen } from '../gebruikers/ProfielContext';
 import { alleSpelletjes } from '../spelletjes/register';
 import { hoogsteOpenNiveau, verwerkRonde } from '../core/beloningen';
@@ -22,6 +22,9 @@ import { Rekenrace } from './rekenrace/Rekenrace';
 import { geluid } from '../core/geluid';
 import { standaardAvatar } from '../gebruikers/avatar';
 import { stopSpreken } from '../core/spraak';
+import { Dolfijnenrace } from './dolfijnenrace/Dolfijnenrace';
+import { TafelKiezer } from '../spelmotor/TafelKiezer';
+import { bewaarTafelKeuze, tafelKeuzeTekst, tafelKeuzeVan } from '../core/tafels';
 
 interface ArcadeDef {
   id: string;
@@ -39,6 +42,7 @@ export const ARCADE: ArcadeDef[] = [
   { id: 'kikkersprong', titel: 'Kikkersprong', icoon: '🐸', soort: 'Antwoord = doelwit', kleur: '#2a9fd6', beschrijving: 'Spring op de juiste waterlelie en steek de rivier over.', Component: Kikkersprong },
   { id: 'mollenmep', titel: 'Mollenmep', icoon: '🔨', soort: 'Antwoord = doelwit', kleur: '#8b5a3c', beschrijving: 'Tik snel op de mol met het juiste antwoord!', Component: Mollenmep },
   { id: 'rekenrace', titel: 'Rekenrace', icoon: '🏎️', soort: 'Antwoord = doelwit', kleur: '#d64545', beschrijving: 'Stuur je kart door de poort met het juiste antwoord voor een turbo!', Component: Rekenrace },
+  { id: 'dolfijnenrace', titel: 'Dolfijnenrace', icoon: '🐬', soort: 'Antwoord = doelwit', kleur: '#1b8fb8', beschrijving: 'Zwem als dolfijn door het juiste antwoord en win de race van de zeemeermin!', Component: Dolfijnenrace },
   { id: 'torenbouwer', titel: 'Torenbouwer', icoon: '🏗️', soort: 'Verdien & speel', kleur: '#ff8c42', beschrijving: 'Elk juist antwoord geeft een blok. Bouw de hoogste toren!', Component: Torenbouwer },
   { id: 'touwtrekken', titel: 'Touwtrekken', icoon: '🪢', soort: 'Samen spelen', kleur: '#2e9e5b', beschrijving: 'Met z’n tweeën op één toestel. Elk op zijn eigen niveau!' },
 ];
@@ -46,8 +50,8 @@ export const ARCADE: ArcadeDef[] = [
 type Fase =
   | { naam: 'lijst' }
   | { naam: 'vak'; arcade: ArcadeDef }
-  | { naam: 'spelen'; arcade: ArcadeDef; spel: SpelDef; bron: Vraagbron; poging: number }
-  | { naam: 'klaar'; arcade: ArcadeDef; spel: SpelDef; juist: number; totaal: number; punten: number; record: number; beloning: Beloning; reden: string }
+  | { naam: 'spelen'; arcade: ArcadeDef; spel: SpelDef; keuze?: SpelKeuze; bron: Vraagbron; poging: number }
+  | { naam: 'klaar'; arcade: ArcadeDef; spel: SpelDef; keuze?: SpelKeuze; juist: number; totaal: number; punten: number; record: number; beloning: Beloning; reden: string }
   | { naam: 'duo-setup' }
   | { naam: 'duo-spelen'; spelers: [DuoSpeler, DuoSpeler] }
   | { naam: 'duo-klaar'; spelers: [DuoSpeler, DuoSpeler]; winnaar: 0 | 1 | null; beloningen: (Beloning | null)[] };
@@ -57,9 +61,9 @@ export function Speelhal({ terug }: { terug: () => void }) {
   const { profielen } = useProfielen();
   const [fase, setFase] = useState<Fase>({ naam: 'lijst' });
 
-  function start(arcade: ArcadeDef, spel: SpelDef) {
-    const bron = new Vraagbron(spel, hoogsteOpenNiveau(profiel, spel.id, spel.niveaus.length));
-    setFase({ naam: 'spelen', arcade, spel, bron, poging: Date.now() });
+  function start(arcade: ArcadeDef, spel: SpelDef, keuze?: SpelKeuze) {
+    const bron = new Vraagbron(spel, hoogsteOpenNiveau(profiel, spel.id, spel.niveaus.length), keuze);
+    setFase({ naam: 'spelen', arcade, spel, keuze, bron, poging: Date.now() });
   }
 
   const terugKnop = (actie: () => void, label = '← Terug') => (
@@ -106,7 +110,7 @@ export function Speelhal({ terug }: { terug: () => void }) {
         </div>
       )}
 
-      {fase.naam === 'vak' && <VakKiezer profiel={profiel} titel={`Waarmee wil je ${fase.arcade.titel.toLowerCase()} spelen?`} onKies={(spel) => start(fase.arcade, spel)} />}
+      {fase.naam === 'vak' && <VakKiezer profiel={profiel} titel={`Waarmee wil je ${fase.arcade.titel.toLowerCase()} spelen?`} onKies={(spel, keuze) => start(fase.arcade, spel, keuze)} />}
 
       {fase.naam === 'spelen' && fase.arcade.Component && (
         <fase.arcade.Component
@@ -120,21 +124,21 @@ export function Speelhal({ terug }: { terug: () => void }) {
             const recordVoor = profiel.arcade[fase.arcade.id]?.record ?? 0;
             const { profiel: nieuw, beloning } = verwerkRonde(profiel, fase.bron.resultaat(fase.arcade.id, punten, tellers));
             bewaar(nieuw);
-            setFase({ naam: 'klaar', arcade: fase.arcade, spel: fase.spel, juist: fase.bron.juist, totaal: fase.bron.totaal, punten, record: Math.max(recordVoor, punten), beloning, reden });
+            setFase({ naam: 'klaar', arcade: fase.arcade, spel: fase.spel, keuze: fase.keuze, juist: fase.bron.juist, totaal: fase.bron.totaal, punten, record: Math.max(recordVoor, punten), beloning, reden });
           }}
         />
       )}
 
       {fase.naam === 'klaar' && (
         <Resultaat
-          titel={`${fase.reden} · ${fase.spel.icoon} ${fase.spel.titel}`}
+          titel={`${fase.reden} · ${fase.spel.icoon} ${fase.spel.titel}${fase.keuze?.tafels ? ` (${tafelKeuzeTekst(fase.keuze.tafels)})` : ''}`}
           juist={fase.juist}
           totaal={fase.totaal}
           punten={fase.punten}
           record={fase.record}
           beloning={fase.beloning}
           knoppen={[
-            { label: '🔁 Nog eens', actie: () => start(fase.arcade, fase.spel), hoofd: true },
+            { label: '🔁 Nog eens', actie: () => start(fase.arcade, fase.spel, fase.keuze), hoofd: true },
             { label: 'Ander vak', actie: () => setFase({ naam: 'vak', arcade: fase.arcade }) },
             { label: 'Speelhal', actie: () => setFase({ naam: 'lijst' }) },
           ]}
@@ -203,8 +207,41 @@ export function Speelhal({ terug }: { terug: () => void }) {
 }
 
 /** Kies uit welk spelletje de vragen komen: eigen leerjaar en de leerjaren ervoor. */
-function VakKiezer({ profiel, titel, onKies }: { profiel: Profiel; titel: string; onKies: (s: SpelDef) => void }) {
+function VakKiezer({ profiel, titel, onKies }: { profiel: Profiel; titel: string; onKies: (s: SpelDef, keuze?: SpelKeuze) => void }) {
+  const { bewaar } = useProfielen();
+  const [tafelSpel, setTafelSpel] = useState<SpelDef | null>(null);
+  const [tafels, setTafels] = useState(() => tafelKeuzeVan(profiel));
   const leerjaren = useMemo(() => Array.from({ length: profiel.leerjaar }, (_, i) => (profiel.leerjaar - i) as Leerjaar), [profiel.leerjaar]);
+  if (tafelSpel) {
+    return (
+      <div className="vak-kiezer">
+        <div className="paneel mijn-tafels">
+          <h3>
+            {tafelSpel.icoon} {tafelSpel.titel}: welke tafels wil je oefenen?
+          </h3>
+          <TafelKiezer
+            waarde={tafels}
+            onWijzig={(k) => {
+              setTafels(k);
+              if (profiel.id !== 'gast') bewaar(bewaarTafelKeuze(profiel, k));
+            }}
+          />
+          <div className="knoppenrij">
+            <button className="knop groot" autoFocus onClick={() => onKies(tafelSpel, { tafels })}>
+              🎯 Speel met {tafelKeuzeTekst(tafels)} ➜
+            </button>
+            <button className="knop" onClick={() => onKies(tafelSpel)}>
+              Volgens mijn niveau
+            </button>
+            <button className="knop grijs" onClick={() => setTafelSpel(null)}>
+              ← Ander vak
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="vak-kiezer">
       <p className="ondertitel">{titel}</p>
@@ -225,7 +262,8 @@ function VakKiezer({ profiel, titel, onKies }: { profiel: Profiel; titel: string
                   style={{ borderColor: w.kleur }}
                   onClick={() => {
                     geluid.klik();
-                    onKies(s);
+                    if (s.tafelkeuze) setTafelSpel(s);
+                    else onKies(s);
                   }}
                 >
                   <span className="spel-icoon">{s.icoon}</span>
@@ -249,7 +287,7 @@ function VakKiezer({ profiel, titel, onKies }: { profiel: Profiel; titel: string
 function DuoSetup({ ik, anderen, onStart }: { ik: Profiel; anderen: Profiel[]; onStart: (s: [DuoSpeler, DuoSpeler]) => void }) {
   const [tweede, setTweede] = useState<Profiel | 'gast' | null>(null);
   const [gastLj, setGastLj] = useState<Leerjaar>(3);
-  const [spel1, setSpel1] = useState<SpelDef | null>(null);
+  const [spel1, setSpel1] = useState<{ spel: SpelDef; keuze?: SpelKeuze } | null>(null);
 
   const gastProfiel: Profiel = useMemo(
     () => ({ ...ik, id: 'gast', naam: 'Gast', leerjaar: gastLj, avatar: standaardAvatar('robot'), spellen: {}, instellingen: { frans: true } }),
@@ -288,17 +326,18 @@ function DuoSetup({ ik, anderen, onStart }: { ik: Profiel; anderen: Profiel[]; o
   }
 
   const p2 = tweede === 'gast' ? gastProfiel : tweede;
-  const bron = (p: Profiel, s: SpelDef) => new Vraagbron(s, hoogsteOpenNiveau(p, s.id, s.niveaus.length));
+  const bron = (p: Profiel, s: SpelDef, keuze?: SpelKeuze) => new Vraagbron(s, hoogsteOpenNiveau(p, s.id, s.niveaus.length), keuze);
 
-  if (!spel1) return <VakKiezer profiel={ik} titel={`🔴 ${ik.naam}, kies je vak`} onKies={setSpel1} />;
+  if (!spel1) return <VakKiezer key="speler1" profiel={ik} titel={`🔴 ${ik.naam}, kies je vak`} onKies={(spel, keuze) => setSpel1({ spel, keuze })} />;
   return (
     <VakKiezer
+      key="speler2"
       profiel={p2}
       titel={`🔵 ${p2.naam}, kies je vak`}
-      onKies={(spel2) =>
+      onKies={(spel2, keuze2) =>
         onStart([
-          { naam: ik.naam, avatar: ik.avatar, bron: bron(ik, spel1), profielId: ik.id },
-          { naam: p2.naam, avatar: p2.avatar, bron: bron(p2, spel2), profielId: tweede === 'gast' ? null : p2.id },
+          { naam: ik.naam, avatar: ik.avatar, bron: bron(ik, spel1.spel, spel1.keuze), profielId: ik.id },
+          { naam: p2.naam, avatar: p2.avatar, bron: bron(p2, spel2, keuze2), profielId: tweede === 'gast' ? null : p2.id },
         ])
       }
     />

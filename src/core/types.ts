@@ -49,6 +49,18 @@ export interface Vraag {
   uitspraak?: { tekst: string; taal: Taal };
 }
 
+/** Welke tafels een kind oefent, en of het maal, delen of allebei is. */
+export type TafelSoort = 'maal' | 'delen' | 'beide';
+export interface TafelKeuze {
+  tafels: number[];
+  soort: TafelSoort;
+}
+
+/** Eigen keuzes van het kind die een spel mag gebruiken (nu: de tafelkeuze). */
+export interface SpelKeuze {
+  tafels?: TafelKeuze;
+}
+
 export interface SpelDef {
   id: string;
   titel: string;
@@ -58,8 +70,13 @@ export interface SpelDef {
   vak: Vak;
   /** Namen van de niveaus, bv. ["tot 5", "tot 10", "tot 20"]. */
   niveaus: string[];
-  /** Maak een nieuwe vraag op niveau 0..niveaus.length-1. */
-  maak: (niveau: number) => Vraag;
+  /**
+   * Maak een nieuwe vraag op niveau 0..niveaus.length-1. Met `keuze` gebruikt
+   * het spel de eigen keuze van het kind (bv. de tafels) in plaats van het niveau.
+   */
+  maak: (niveau: number, keuze?: SpelKeuze) => Vraag;
+  /** Tafelspel: het kind kan zelf de tafels en maal/delen kiezen (zie core/tafels.ts). */
+  tafelkeuze?: boolean;
   /** Vragen standaard laten voorlezen (jonge kinderen, Frans). */
   voorlezen?: boolean;
   /** Facultatief onderdeel dat ouders kunnen uitzetten. */
@@ -118,6 +135,8 @@ export interface Profiel {
   };
   instellingen: {
     frans: boolean;
+    /** Eigen tafelkeuze voor alle tafelspelletjes (ontbreekt = standaard). */
+    tafels?: TafelKeuze;
   };
   aangemaakt: number;
 }
@@ -142,6 +161,8 @@ export interface RondeResultaat {
   foutSleutels: string[];
   punten?: number;
   tellers?: Record<string, number>;
+  /** Gespeeld met een eigen keuze (tafels): telt niet mee voor de sterren van een niveau. */
+  eigenKeuze?: boolean;
 }
 
 export interface Beloning {

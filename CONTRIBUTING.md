@@ -102,6 +102,8 @@ Open daarna http://localhost:5173.
 
 Klaar: het spel verschijnt in de wereld van dat leerjaar **én** als vak in alle arcadespelletjes.
 
+**Werkt je spel met de maal- of deeltafels?** Schrijf dan geen eigen sommen, maar gebruik `tafelVraag()` uit `src/core/tafels.ts` en zet `tafelkeuze: true` in je `SpelDef`. Dan kan het kind (of de ouder in het ouderzicht) aanvinken welke tafels het oefent, bv. de tafels van 2, 5 en 10, en kiezen tussen maal, delen of allebei. Tafelschelpen (2e leerjaar) is een goed voorbeeld.
+
 ## Goed om te weten
 
 - **Taal:** alles in het Vlaams-Nederlands (*leerjaar*, *kommagetal*, *half vier*, *juf*).

@@ -1,4 +1,6 @@
 import { useRef, useState } from 'react';
+import { TafelKiezer } from '../spelmotor/TafelKiezer';
+import { bewaarTafelKeuze, tafelKeuzeTekst, tafelKeuzeVan } from '../core/tafels';
 import type { Leerjaar, Profiel, Vak } from '../core/types';
 import { hashPin, opslag } from '../core/opslag';
 import { useProfielen } from './ProfielContext';
@@ -257,6 +259,10 @@ function KindDetail({ p, bewaar, verwijder }: { p: Profiel; bewaar: (p: Profiel)
         <input type="checkbox" checked={p.instellingen.frans} onChange={(e) => bewaar({ ...p, instellingen: { ...p.instellingen, frans: e.target.checked } })} />
         Frans tonen in het 3e en 4e leerjaar (facultatief). Vanaf het 5e is Frans altijd zichtbaar.
       </label>
+      <div className="veld">
+        <span>🎯 Tafels oefenen (Tafelschelpen, Tafelklim en de Speelhal): {tafelKeuzeTekst(tafelKeuzeVan(p))}</span>
+        <TafelKiezer waarde={tafelKeuzeVan(p)} onWijzig={(k) => bewaar(bewaarTafelKeuze(p, k))} />
+      </div>
       <div className="knoppenrij">
         {!bevestig ? (
           <button className="knop rood" onClick={() => setBevestig(true)}>

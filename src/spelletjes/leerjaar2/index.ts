@@ -1,42 +1,26 @@
 // 🏖️ 2e leerjaar: Het Rekenstrand
-import type { SpelDef } from '../../core/types';
-import { getalOpties, kies, opties, rand } from '../../core/random';
+import type { SpelDef, TafelKeuze } from '../../core/types';
+import { kies, opties, rand } from '../../core/random';
+import { tafelVraag } from '../../core/tafels';
+
+const SCHELP_NIVEAUS: TafelKeuze[] = [
+  { tafels: [2, 10], soort: 'maal' },
+  { tafels: [1, 5], soort: 'maal' },
+  { tafels: [1, 2, 5, 10], soort: 'beide' },
+];
 
 const tafelschelpen: SpelDef = {
   id: 'tafelschelpen',
   titel: 'Tafelschelpen',
-  beschrijving: 'De tafels van 1, 2, 5 en 10.',
+  beschrijving: 'De tafels van 1, 2, 5 en 10. Of kies zelf je tafels!',
   icoon: '🐚',
   leerjaar: 2,
   vak: 'rekenen',
   niveaus: ['×2 en ×10', '×1 en ×5', 'gemengd en delen'],
   voorlezen: true,
+  tafelkeuze: true,
   doelen: ['Maaltafels van 1, 2, 5 en 10 inoefenen; delen als verdelen'],
-  maak(n) {
-    const tafels = [[2, 10], [1, 5], [1, 2, 5, 10]][n];
-    const t = kies(tafels);
-    const a = rand(1, 10);
-    if (n === 2 && Math.random() < 0.4) {
-      const product = a * t;
-      return {
-        sleutel: `${product}:${t}`,
-        prompt: `${product} : ${t} = ?`,
-        voorlezen: `${product} gedeeld door ${t}`,
-        antwoord: String(a),
-        opties: getalOpties(a, 2),
-        invoer: 'getal',
-      };
-    }
-    const uitkomst = a * t;
-    return {
-      sleutel: `${a}x${t}`,
-      prompt: `${a} × ${t} = ?`,
-      voorlezen: `${a} maal ${t}`,
-      antwoord: String(uitkomst),
-      opties: getalOpties(uitkomst, 2, 4, [uitkomst + t, uitkomst - t, (a + 1) * t]),
-      invoer: 'getal',
-    };
-  },
+  maak: (n, keuze) => tafelVraag(keuze?.tafels ?? SCHELP_NIVEAUS[n], { deelKans: 0.4 }),
 };
 
 const WOORDEN = ['', 'een', 'twee', 'drie', 'vier', 'vijf', 'zes', 'zeven', 'acht', 'negen', 'tien', 'elf', 'twaalf'];
