@@ -1,7 +1,10 @@
+import { getalbeeld, hoeveelheid } from '../core/getalbeeld';
 import type { Visual } from '../core/types';
 
 /** Toont "3/4" als echte breuk, andere tekst gewoon. */
 export function AntwoordTekst({ tekst }: { tekst: string }) {
+  const h = hoeveelheid(tekst);
+  if (h) return <Getalbeeld emoji={h.emoji} aantal={h.aantal} klein />;
   const m = /^(\d+)\/(\d+)$/.exec(tekst);
   if (!m) return <>{tekst}</>;
   return (
@@ -116,21 +119,32 @@ function Rechthoek({ breedte, hoogte, eenheid }: { breedte: number; hoogte: numb
   );
 }
 
-function Tel({ emoji, aantal }: { emoji: string; aantal: number }) {
-  // in groepjes van 5 zodat tellen makkelijker wordt
-  const groepen: number[] = [];
-  for (let i = 0; i < aantal; i += 5) groepen.push(Math.min(5, aantal - i));
+/** Een hoeveelheid als getalbeeld: dobbelsteen tot 6, daarna tienvelden. */
+export function Getalbeeld({ emoji, aantal, klein = false }: { emoji: string; aantal: number; klein?: boolean }) {
+  const velden = getalbeeld(aantal);
   return (
-    <div className={`visual-tel ${aantal > 10 ? 'veel' : ''}`}>
-      {groepen.map((g, i) => (
-        <div key={i} className="tel-groep">
-          {Array.from({ length: g }, (_, j) => (
-            <span key={j} style={{ animationDelay: `${(i * 5 + j) * 40}ms` }}>
-              {emoji}
+    <span className={`getalbeeld ${klein ? 'klein' : ''}`} role="img" aria-label={`${aantal}`}>
+      {velden.map((v, i) => (
+        <span
+          key={i}
+          className={`getalveld ${v.kader ? 'tienveld' : 'dobbelsteen'}`}
+          style={{ gridTemplateColumns: `repeat(${v.kolommen}, 1fr)`, gridTemplateRows: `repeat(${v.rijen}, 1fr)` }}
+        >
+          {v.vakjes.map((vk, j) => (
+            <span key={j} className={`vakje ${vk.vol ? 'vol' : ''}`} style={{ gridColumn: vk.x + 1, gridRow: vk.y + 1, animationDelay: `${(i * 10 + j) * 40}ms` }}>
+              {vk.vol ? emoji : ''}
             </span>
           ))}
-        </div>
+        </span>
       ))}
+    </span>
+  );
+}
+
+function Tel({ emoji, aantal }: { emoji: string; aantal: number }) {
+  return (
+    <div className={`visual-tel ${aantal > 10 ? 'veel' : ''}`}>
+      <Getalbeeld emoji={emoji} aantal={aantal} />
     </div>
   );
 }

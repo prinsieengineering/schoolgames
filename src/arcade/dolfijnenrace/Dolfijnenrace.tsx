@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Vraag } from '../../core/types';
 import { B, H, bereidCanvas, canvasPunt, klem, tempo, useSpellus, useToetsen } from '../kern/engine';
-import { ploef, tekenDeeltjes, tekenZweef, tekst, updateDeeltjes, laadBeeld, type Deeltje, type Zweef, labelGrootte } from '../kern/teken';
+import { ploef, tekenDeeltjes, tekenZweef, tekst, updateDeeltjes, laadBeeld, type Deeltje, type Zweef, label } from '../kern/teken';
 import { Hud, VraagBalk, type ArcadeProps } from '../kern/ui';
 import { avatarUrl } from '../../gebruikers/avatar';
 import { geluid } from '../../core/geluid';
@@ -308,8 +308,7 @@ export function Dolfijnenrace({ spel, bron, avatar, leerjaar, onEinde }: ArcadeP
           ctx.roundRect(p.x - breed / 2, y - 24, breed, 48, 14);
           ctx.fill();
           ctx.stroke();
-          const grootte = labelGrootte(lab, 28, 150);
-          tekst(ctx, lab, p.x, y, grootte, '#2d2a4a', '');
+          label(ctx, lab, p.x, y, 28, 150, '#2d2a4a', '');
         }
       });
     }

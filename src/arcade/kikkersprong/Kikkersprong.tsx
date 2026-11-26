@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Vraag } from '../../core/types';
 import { B, H, bereidCanvas, canvasPunt, tempo, useSpellus, useToetsen } from '../kern/engine';
-import { ploef, tekenDeeltjes, tekenZweef, tekst, updateDeeltjes, laadBeeld, type Deeltje, type Zweef, labelGrootte } from '../kern/teken';
+import { ploef, tekenDeeltjes, tekenZweef, tekst, updateDeeltjes, laadBeeld, type Deeltje, type Zweef, label } from '../kern/teken';
 import { Hud, VraagBalk, hartjesTekst, tijdTekst, type ArcadeProps } from '../kern/ui';
 import { avatarUrl } from '../../gebruikers/avatar';
 import { geluid } from '../../core/geluid';
@@ -241,8 +241,7 @@ export function Kikkersprong({ spel, bron, avatar, leerjaar, onEinde }: ArcadePr
       ctx.lineTo(x, y - 3);
       ctx.closePath();
       ctx.fill();
-      const grootte = labelGrootte(p.tekst, 28, 130);
-      tekst(ctx, p.tekst, x, y - 2, grootte);
+      label(ctx, p.tekst, x, y - 2, 28, 130);
       ctx.restore();
     });
     // kikker (= de avatar)

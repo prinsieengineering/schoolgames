@@ -1,4 +1,5 @@
 // Tekenfuncties voor de arcade: monsters, sterretjes, bellen, "ploef"-wolkjes.
+import { getalbeeld, hoeveelheid } from '../../core/getalbeeld';
 
 import { B, H } from './engine';
 
@@ -139,6 +140,49 @@ export function labelGrootte(t: string, max: number, ruimte: number) {
     else if (c.codePointAt(0) !== 0x200d && c.codePointAt(0) !== 0xfe0f) eenheden += 1; // geen ZWJ of variatieteken
   }
   return Math.min(max, ruimte / Math.max(1, eenheden));
+}
+
+/**
+ * Antwoordlabel op het canvas. Een hoeveelheid ("🐟🐟🐟") wordt als getalbeeld getekend
+ * (dobbelsteen of tienveld, zie core/getalbeeld.ts), andere tekst zo groot mogelijk binnen `ruimte`.
+ */
+export function label(ctx: CanvasRenderingContext2D, t: string, x: number, y: number, max: number, ruimte: number, kleur = '#fff', rand: string = 'rgba(0,0,0,0.45)') {
+  const h = hoeveelheid(t);
+  if (!h) return tekst(ctx, t, x, y, labelGrootte(t, max, ruimte), kleur, rand);
+  const velden = getalbeeld(h.aantal);
+  const tussen = 4;
+  const rijen = velden.reduce((s, v) => s + v.rijen, 0);
+  const cel = Math.min(ruimte / 5, (max * 1.8 - tussen * (velden.length - 1)) / rijen, max * 0.75);
+  let top = y - (rijen * cel + tussen * (velden.length - 1)) / 2;
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = `${cel * 0.85}px serif`;
+  for (const v of velden) {
+    const links = x - (v.kolommen * cel) / 2;
+    if (v.kader) {
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(links, top, v.kolommen * cel, v.rijen * cel);
+      ctx.strokeStyle = 'rgba(75,63,181,0.4)';
+      ctx.lineWidth = 1;
+      for (let i = 1; i < v.kolommen; i++) {
+        ctx.beginPath();
+        ctx.moveTo(links + i * cel, top);
+        ctx.lineTo(links + i * cel, top + v.rijen * cel);
+        ctx.stroke();
+      }
+      ctx.beginPath();
+      ctx.moveTo(links, top + cel);
+      ctx.lineTo(links + v.kolommen * cel, top + cel);
+      ctx.stroke();
+      ctx.strokeStyle = '#4b3fb5';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(links, top, v.kolommen * cel, v.rijen * cel);
+    }
+    for (const vk of v.vakjes) if (vk.vol) ctx.fillText(h.emoji, links + (vk.x + 0.5) * cel, top + (vk.y + 0.5) * cel + cel * 0.05);
+    top += v.rijen * cel + tussen;
+  }
+  ctx.restore();
 }
 
 export function tekst(ctx: CanvasRenderingContext2D, t: string, x: number, y: number, grootte: number, kleur = '#fff', rand = 'rgba(0,0,0,0.45)') {
