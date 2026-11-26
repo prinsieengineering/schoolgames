@@ -58,6 +58,12 @@ De personages zijn de stijlen **Cats**, **Dogs** en **Voxel Bot** van [DiceBear]
 
 Wil je een andere stijl? Pas dan enkel `src/gebruikers/avatar.ts` aan. De prijzen in de winkel staan in `src/gebruikers/winkelItems.ts`.
 
+## Licentie
+
+De code van Schoolgames valt onder de [MIT-licentie](LICENSE): iedereen (ouders, scholen, ...) mag ze vrij gebruiken, aanpassen en verder verspreiden, zolang de licentietekst erbij blijft. Er wordt geen garantie gegeven.
+
+Materiaal van anderen houdt zijn eigen licentie: de avatartekeningen van DiceBear zijn CC0 1.0, de code van DiceBear en React is MIT. Wie bijdraagt, gaat ermee akkoord dat zijn bijdrage ook onder de MIT-licentie valt.
+
 ## Structuur (blokken)
 
 ```
