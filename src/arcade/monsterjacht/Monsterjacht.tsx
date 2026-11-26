@@ -31,7 +31,7 @@ interface Kogel {
 export function Monsterjacht({ bron, avatar, leerjaar, onEinde }: ArcadeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const factor = tempo(leerjaar);
-  const avatarImg = useMemo(() => laadBeeld(avatarUrl(avatar)), [avatar]);
+  const avatarImg = useMemo(() => laadBeeld(avatarUrl(avatar, false)), [avatar]);
   const [pauze, setPauze] = useState(false);
   const [hud, setHud] = useState({ hartjes: 3, punten: 0, munitie: 3, tijd: SPEELTIJD, ijs: 3, superschot: 0 });
 
@@ -196,7 +196,7 @@ export function Monsterjacht({ bron, avatar, leerjaar, onEinde }: ArcadeProps) {
     ctx.fillRect(0, GROND + 10, B, 8);
     for (const m of s.monsters) monster(ctx, m.x, m.y, m.r, m.kleur, s.t, bevroren);
     for (const kg of s.kogels) kg.soort === 'ster' ? ster(ctx, kg.x, kg.y, 11, '#ffd23f', s.t * 8) : bel(ctx, kg.x, kg.y, 10);
-    if (avatarImg.complete) ctx.drawImage(avatarImg, s.x - 34, GROND - 66, 68, 79);
+    if (avatarImg.complete) ctx.drawImage(avatarImg, s.x - 38, GROND - 64, 76, 76);
     tekenDeeltjes(ctx, s.deeltjes);
     tekenZweef(ctx, s.zweef, dt);
     if (bevroren) {

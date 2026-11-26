@@ -52,6 +52,12 @@ Zet de map `dist/` op een gratis statische host, zoals Netlify (map erop slepen)
 - Ruimt iemand de browsergegevens op (cookies/sitegegevens wissen), dan verdwijnt de voortgang. Maak dus af en toe een back-up.
 - Voorlezen gebruikt de stemmen van het toestel. Op Windows en Android zit er meestal een Nederlandse en een Franse stem bij. Anders werkt alles gewoon, maar zonder stem.
 
+## Avatars
+
+De personages zijn de stijlen **Cats**, **Dogs** en **Voxel Bot** van [DiceBear](https://www.dicebear.com) (`@dicebear/core` en `@dicebear/styles`, versie 11). De tekeningen hebben de licentie CC0 1.0: vrij te gebruiken, ook online, zonder naamsvermelding. De code van DiceBear valt onder de MIT-licentie. Alles zit mee in de app, dus het werkt offline en er worden geen gegevens naar DiceBear gestuurd.
+
+Wil je een andere stijl? Pas dan enkel `src/gebruikers/avatar.ts` aan. De prijzen in de winkel staan in `src/gebruikers/winkelItems.ts`.
+
 ## Structuur (blokken)
 
 ```

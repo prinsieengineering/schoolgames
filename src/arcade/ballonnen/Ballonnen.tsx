@@ -29,7 +29,7 @@ interface Ballon {
 export function Ballonnen({ spel, bron, avatar, leerjaar, onEinde }: ArcadeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const factor = tempo(leerjaar);
-  const avatarImg = useMemo(() => laadBeeld(avatarUrl(avatar)), [avatar]);
+  const avatarImg = useMemo(() => laadBeeld(avatarUrl(avatar, false)), [avatar]);
   const [vraag, setVraag] = useState<Vraag>(() => bron.volgende());
   const [melding, setMelding] = useState('');
   const [hud, setHud] = useState({ punten: 0, tijd: SPEELTIJD, juist: 0 });
@@ -233,7 +233,7 @@ export function Ballonnen({ spel, bron, avatar, leerjaar, onEinde }: ArcadeProps
       ctx.lineTo(p.x + 6, p.y + 4);
       ctx.fill();
     }
-    if (avatarImg.complete) ctx.drawImage(avatarImg, s.x - 32, BODEM - 50, 64, 74);
+    if (avatarImg.complete) ctx.drawImage(avatarImg, s.x - 36, BODEM - 50, 72, 72);
     tekenDeeltjes(ctx, s.deeltjes);
     tekenZweef(ctx, s.zweef, dt);
     if (s.klaar) tekst(ctx, 'Tijd!', B / 2, H / 2, 54, '#ffd23f');

@@ -22,7 +22,7 @@ interface Blok {
 export function Torenbouwer({ bron, avatar, leerjaar, onEinde }: ArcadeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const factor = tempo(leerjaar);
-  const avatarImg = useMemo(() => laadBeeld(avatarUrl(avatar)), [avatar]);
+  const avatarImg = useMemo(() => laadBeeld(avatarUrl(avatar, false)), [avatar]);
   const [hud, setHud] = useState({ hartjes: 3, punten: 0, hoogte: 0, tijd: SPEELTIJD, klaarVoorBlok: false });
 
   const s = useRef({
@@ -129,7 +129,7 @@ export function Torenbouwer({ bron, avatar, leerjaar, onEinde }: ArcadeProps) {
     });
     // avatar op de toren
     const top = s.toren.length ? s.toren[s.toren.length - 1].x : B / 2;
-    if (avatarImg.complete) ctx.drawImage(avatarImg, top - 28, torenTop() - 66, 56, 65);
+    if (avatarImg.complete) ctx.drawImage(avatarImg, top - 32, torenTop() - 62, 64, 64);
     // kraan
     const hy = haakY();
     const kx = kraanX();

@@ -1,181 +1,191 @@
-// Samengestelde avatar, opgebouwd uit lagen (dier + kleur + hoed + bril + extra).
-// Alles is zelf getekend als SVG, zodat het ook in één HTML-bestand werkt.
-// Wil je later tekeningen uit een pakket (bv. Kenney, CC0) gebruiken? Vervang
-// dan enkel de functie `avatarSvg`: de rest van de app gebruikt alleen die.
+// Avatars: katten, honden en voxelrobots van DiceBear (stijlen "cats", "dogs"
+// en "voxel-bot", allemaal CC0 1.0: vrij te gebruiken, ook online).
+// De rest van de app gebruikt alleen `avatarSvg`, `avatarUrl` en de
+// beschrijvingen hieronder; wil je ooit een andere stijl, dan pas je enkel dit bestand aan.
 
-import type { Avatar } from '../core/types';
+import { Avatar as DbAvatar, Style } from '@dicebear/core/lite';
+import catsDef from '@dicebear/styles/cats.json';
+import dogsDef from '@dicebear/styles/dogs.json';
+import botDef from '@dicebear/styles/voxel-bot.json';
+import type { Avatar, Soort } from '../core/types';
 
-export const DIEREN = ['vos', 'beer', 'kat', 'konijn', 'panda', 'kikker', 'uil', 'eenhoorn', 'draak', 'robot'] as const;
+export type { Soort };
 
-export const KLEUREN: Record<string, string> = {
-  oranje: '#ff8c42',
-  bruin: '#b0703c',
-  blauw: '#4d96ff',
-  grijs: '#9aa5b1',
-  roze: '#ff8fab',
-  groen: '#5cc96e',
-  paars: '#9b5de5',
-  geel: '#ffd23f',
-  wit: '#f4f1ea',
-  rood: '#ef476f',
-  turkoois: '#2ec4b6',
-  zwart: '#4a4a55',
+export interface Onderdeel {
+  id: string;
+  naam: string;
+  icoon: string;
+  /** Mag op "geen" staan. */
+  optioneel: boolean;
+  varianten: string[];
+}
+
+export interface KleurDeel {
+  id: string;
+  naam: string;
+  waarden: string[];
+}
+
+interface SoortInfo {
+  naam: string;
+  icoon: string;
+  style: Style;
+  onderdelen: Onderdeel[];
+  kleuren: KleurDeel[];
+}
+
+const NAMEN: Record<string, [string, string]> = {
+  eyes: ['Ogen', '👀'],
+  mouth: ['Mond', '👄'],
+  head: ['Kop', '🐱'],
+  ears: ['Oren', '👂'],
+  muzzle: ['Snuit', '🐶'],
+  hair: ['Kuifje', '💇'],
+  blaze: ['Bles', '⭐'],
+  pattern: ['Vlekken', '🐾'],
+  body: ['Lijf', '🧸'],
+  tail: ['Staart', '〰️'],
+  collar: ['Halsband', '🎀'],
+  toy: ['Speeltje', '🧶'],
+  cheeks: ['Wangetjes', '😊'],
+  scene: ['Achtergrond', '🏞️'],
+  top: ['Hoofd', '📡'],
+  chest: ['Borst', '💟'],
 };
 
-function donkerder(hex: string, factor = 0.75) {
-  const n = parseInt(hex.slice(1), 16);
-  const r = Math.round(((n >> 16) & 255) * factor);
-  const g = Math.round(((n >> 8) & 255) * factor);
-  const b = Math.round((n & 255) * factor);
-  return `rgb(${r},${g},${b})`;
+const KLEURNAMEN: Record<string, string> = {
+  fur: 'Vachtkleur',
+  collar: 'Halsbandkleur',
+  body: 'Kleur',
+  glow: 'Lichtjes',
+  accent: 'Details',
+  screen: 'Scherm',
+  background: 'Achtergrond',
+};
+
+/** Nederlandse namen voor varianten (wat niet in de lijst staat, krijgt een nummer). */
+const VARIANTNAMEN: Record<string, string> = {
+  happy: 'blij', wink: 'knipoog', sleepy: 'slaperig', round: 'rond', wide: 'groot', squint: 'knijp', up: 'omhoog', down: 'omlaag',
+  sideeye: 'zijkant', relaxed: 'relax', dilated: 'grote pupillen', slit: 'spleetjes', puppy: 'puppyogen', button: 'knoopjes',
+  cyclops: 'één oog', plus: 'plusjes', square: 'vierkant', visor: 'vizier',
+  smile: 'lach', grin: 'grijns', ooh: 'ooh', open: 'open', yawn: 'gaap', blep: 'tongetje', cat: 'kattensnoet', line: 'streepje',
+  lolling: 'tong uit', pant: 'hijgen', tongue: 'tong', grill: 'rooster', speaker: 'luidspreker', zigzag: 'zigzag',
+  kitten: 'kitten', pointed: 'puntig', tall: 'hoog', bat: 'vleermuis', drop: 'hangend', half: 'half', long: 'lang',
+  pompon: 'pompon', prick: 'rechtop', small: 'klein', beard: 'baardje', fluffy: 'pluizig', short: 'kort',
+  bangs: 'pony', topknot: 'staartje', tuft: 'plukje', bib: 'slab', brows: 'wenkbrauwen', star: 'ster', stripe: 'streep',
+  patch: 'vlek', spots: 'stippen', stripes: 'strepen', stripesCheeks: 'wangstrepen', tabbyM: 'tijgerkop', cap: 'kapje', sides: 'zijkanten',
+  chest: 'witte borst', sitting: 'zittend', chestSocks: 'borst en sokjes', plain: 'effen', socks: 'sokjes',
+  bell: 'belletje', tag: 'naamplaatje', bandana: 'bandana', bone: 'botje',
+  mouse: 'muisje', yarn: 'bolletje wol', ball: 'bal', frisbee: 'frisbee', stick: 'stok',
+  blush: 'blosjes',
+  bedroom: 'slaapkamer', forest: 'bos', livingRoom: 'woonkamer', meadow: 'weide', nursery: 'kinderkamer', playground: 'speeltuin',
+  beach: 'strand', kitchen: 'keuken', street: 'straat', yard: 'tuin',
+  antenna: 'antenne', dish: 'schotel', fin: 'vin', lightbar: 'lichtbalk', siren: 'sirene', studs: 'noppen', twin: 'dubbele antenne',
+  buttons: 'knopjes', dial: 'draaiknop', heart: 'hartje', screen: 'schermpje', slot: 'gleuf', vents: 'roostertjes',
+};
+
+export const variantNaam = (deel: string, v: string, i: number) =>
+  v === 'geen' ? 'geen' : VARIANTNAMEN[v] ?? `${NAMEN[deel]?.[0] ?? deel} ${i + 1}`;
+
+type Def = {
+  components: Record<string, { probability?: number; variants: Record<string, unknown> }>;
+  colors: Record<string, { values: string[] }>;
+};
+
+function maakInfo(naam: string, icoon: string, def: Def, volgorde: string[], kleuren: string[]): SoortInfo {
+  return {
+    naam,
+    icoon,
+    style: new Style(def as never),
+    onderdelen: volgorde
+      .filter((id) => def.components[id])
+      .map((id) => ({
+        id,
+        naam: NAMEN[id]?.[0] ?? id,
+        icoon: NAMEN[id]?.[1] ?? '•',
+        optioneel: def.components[id].probability !== undefined || id === 'scene',
+        varianten: Object.keys(def.components[id].variants),
+      })),
+    kleuren: kleuren.filter((id) => def.colors[id]).map((id) => ({ id, naam: KLEURNAMEN[id] ?? id, waarden: def.colors[id].values })),
+  };
 }
 
-function oren(dier: string, c: string, d: string): string {
-  switch (dier) {
-    case 'vos':
-    case 'kat':
-      return `<path d="M24 38 L30 8 L48 28 Z" fill="${c}" stroke="${d}" stroke-width="2"/><path d="M76 38 L70 8 L52 28 Z" fill="${c}" stroke="${d}" stroke-width="2"/>
-        <path d="M29 30 L32 16 L41 27 Z" fill="#ffd1dc"/><path d="M71 30 L68 16 L59 27 Z" fill="#ffd1dc"/>`;
-    case 'beer':
-      return `<circle cx="26" cy="28" r="12" fill="${c}" stroke="${d}" stroke-width="2"/><circle cx="74" cy="28" r="12" fill="${c}" stroke="${d}" stroke-width="2"/>
-        <circle cx="26" cy="28" r="6" fill="${d}"/><circle cx="74" cy="28" r="6" fill="${d}"/>`;
-    case 'panda':
-      return `<circle cx="26" cy="28" r="12" fill="#333"/><circle cx="74" cy="28" r="12" fill="#333"/>`;
-    case 'konijn':
-      return `<ellipse cx="36" cy="10" rx="9" ry="24" fill="${c}" stroke="${d}" stroke-width="2"/><ellipse cx="64" cy="10" rx="9" ry="24" fill="${c}" stroke="${d}" stroke-width="2"/>
-        <ellipse cx="36" cy="12" rx="4" ry="16" fill="#ffd1dc"/><ellipse cx="64" cy="12" rx="4" ry="16" fill="#ffd1dc"/>`;
-    case 'kikker':
-      return `<circle cx="32" cy="30" r="14" fill="${c}" stroke="${d}" stroke-width="2"/><circle cx="68" cy="30" r="14" fill="${c}" stroke="${d}" stroke-width="2"/>`;
-    case 'uil':
-      return `<path d="M22 36 L20 12 L40 28 Z" fill="${d}"/><path d="M78 36 L80 12 L60 28 Z" fill="${d}"/>`;
-    case 'eenhoorn':
-      return `<path d="M44 26 L50 -4 L56 26 Z" fill="#ffe066" stroke="#e0a100" stroke-width="2"/>
-        <path d="M27 36 L30 14 L44 28 Z" fill="${c}" stroke="${d}" stroke-width="2"/><path d="M73 36 L70 14 L56 28 Z" fill="${c}" stroke="${d}" stroke-width="2"/>
-        <path d="M20 44 Q14 60 22 76" stroke="#ff8fab" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M24 40 Q16 54 20 66" stroke="#9b5de5" stroke-width="5" fill="none" stroke-linecap="round"/>`;
-    case 'draak':
-      return `<path d="M30 30 L22 6 L42 26 Z" fill="#ffe066" stroke="#e0a100" stroke-width="2"/><path d="M70 30 L78 6 L58 26 Z" fill="#ffe066" stroke="#e0a100" stroke-width="2"/>
-        <path d="M40 26 L45 16 L50 25 L55 16 L60 26" fill="${d}"/>`;
-    case 'robot':
-      return `<line x1="50" y1="24" x2="50" y2="8" stroke="#666" stroke-width="3"/><circle cx="50" cy="7" r="5" fill="#ef476f"/>
-        <rect x="12" y="46" width="8" height="18" rx="3" fill="#888"/><rect x="80" y="46" width="8" height="18" rx="3" fill="#888"/>`;
-    default:
-      return '';
+export const SOORTEN: Record<Soort, SoortInfo> = {
+  kat: maakInfo('Kat', '🐱', catsDef as unknown as Def, ['eyes', 'mouth', 'head', 'pattern', 'body', 'tail', 'cheeks', 'collar', 'toy', 'scene'], ['fur', 'collar']),
+  hond: maakInfo('Hond', '🐶', dogsDef as unknown as Def, ['eyes', 'mouth', 'ears', 'muzzle', 'hair', 'blaze', 'pattern', 'body', 'tail', 'cheeks', 'collar', 'toy', 'scene'], ['fur', 'collar']),
+  robot: maakInfo('Robot', '🤖', botDef as unknown as Def, ['eyes', 'mouth', 'top', 'chest'], ['body', 'glow', 'accent', 'screen', 'background']),
+};
+
+const kleurSleutel = (id: string) => `kleur:${id}`;
+
+/** Standaard: eerste variant van elk verplicht onderdeel, optionele onderdelen uit. */
+export function standaardAvatar(soort: Soort): Avatar {
+  const info = SOORTEN[soort];
+  const delen: Record<string, string> = {};
+  for (const o of info.onderdelen) delen[o.id] = o.optioneel ? 'geen' : o.varianten[0];
+  for (const k of info.kleuren) delen[kleurSleutel(k.id)] = k.waarden[0];
+  return { soort, delen };
+}
+
+/** Oude avatars (zelfgetekende dieren) omzetten naar het nieuwe formaat. */
+export function normaliseerAvatar(a: unknown): Avatar {
+  const x = a as Partial<Avatar> & { dier?: string };
+  if (x && x.soort && SOORTEN[x.soort as Soort]) return { soort: x.soort as Soort, delen: { ...standaardAvatar(x.soort as Soort).delen, ...(x.delen ?? {}) } };
+  const soort: Soort = x?.dier === 'robot' ? 'robot' : x?.dier === 'beer' || x?.dier === 'panda' ? 'hond' : 'kat';
+  return standaardAvatar(soort);
+}
+
+function opties(a: Avatar, achtergrond: boolean): Record<string, unknown> {
+  const info = SOORTEN[a.soort];
+  const o: Record<string, unknown> = { seed: 'schoolgames' };
+  for (const d of info.onderdelen) {
+    const v = d.id === 'scene' && !achtergrond ? 'geen' : a.delen[d.id];
+    if (!v || v === 'geen') {
+      if (d.optioneel) o[`${d.id}Probability`] = 0;
+    } else if (d.varianten.includes(v)) {
+      o[`${d.id}Variant`] = v;
+      o[`${d.id}Probability`] = 100;
+    }
   }
-}
-
-function hoofd(dier: string, c: string, d: string): string {
-  if (dier === 'robot') return `<rect x="20" y="24" width="60" height="58" rx="14" fill="${c}" stroke="${d}" stroke-width="2.5"/>`;
-  const vul = dier === 'panda' ? '#fbfbfb' : c;
-  const rand = dier === 'panda' ? '#bbb' : d;
-  return `<ellipse cx="50" cy="56" rx="31" ry="29" fill="${vul}" stroke="${rand}" stroke-width="2.5"/>`;
-}
-
-function gezicht(dier: string, c: string, d: string): string {
-  const oogY = dier === 'kikker' ? 30 : 52;
-  const oogX = dier === 'kikker' ? 18 : 12;
-  let s = '';
-  if (dier === 'panda') s += `<ellipse cx="38" cy="53" rx="9" ry="11" fill="#333" transform="rotate(-20 38 53)"/><ellipse cx="62" cy="53" rx="9" ry="11" fill="#333" transform="rotate(20 62 53)"/>`;
-  if (dier === 'uil') s += `<circle cx="38" cy="52" r="12" fill="#fff" stroke="${d}" stroke-width="2"/><circle cx="62" cy="52" r="12" fill="#fff" stroke="${d}" stroke-width="2"/>`;
-  if (dier === 'kikker') s += `<circle cx="32" cy="30" r="8" fill="#fff"/><circle cx="68" cy="30" r="8" fill="#fff"/>`;
-  if (dier === 'robot') {
-    s += `<rect x="30" y="42" width="16" height="14" rx="4" fill="#dff"/><rect x="54" y="42" width="16" height="14" rx="4" fill="#dff"/>
-      <circle cx="38" cy="49" r="4" fill="#223"/><circle cx="62" cy="49" r="4" fill="#223"/>
-      <rect x="36" y="66" width="28" height="6" rx="3" fill="#223"/><line x1="43" y1="66" x2="43" y2="72" stroke="#dff"/><line x1="50" y1="66" x2="50" y2="72" stroke="#dff"/><line x1="57" y1="66" x2="57" y2="72" stroke="#dff"/>`;
-    return s;
+  for (const k of info.kleuren) {
+    const v = a.delen[kleurSleutel(k.id)];
+    if (v && k.waarden.includes(v)) o[`${k.id}Color`] = [v];
   }
-  // snuit
-  if (['vos', 'beer', 'kat', 'konijn', 'eenhoorn', 'draak'].includes(dier)) {
-    s += `<ellipse cx="50" cy="68" rx="15" ry="11" fill="${dier === 'draak' ? donkerder(c, 1.1) : '#fff6ec'}" opacity="0.95"/>`;
-  }
-  // ogen
-  s += `<circle cx="${50 - oogX}" cy="${oogY}" r="5" fill="#222"/><circle cx="${50 + oogX}" cy="${oogY}" r="5" fill="#222"/>
-    <circle cx="${50 - oogX + 1.8}" cy="${oogY - 1.8}" r="1.8" fill="#fff"/><circle cx="${50 + oogX + 1.8}" cy="${oogY - 1.8}" r="1.8" fill="#fff"/>`;
-  // neus + mond
-  if (dier === 'uil') s += `<path d="M45 62 L55 62 L50 72 Z" fill="#ffb703"/>`;
-  else if (dier === 'kikker') s += `<path d="M34 66 Q50 80 66 66" stroke="${d}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-  else {
-    s += `<ellipse cx="50" cy="63" rx="5" ry="3.5" fill="#333"/>
-      <path d="M43 70 Q50 76 57 70" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
-  }
-  if (dier === 'kat') s += `<g stroke="#555" stroke-width="1.3"><line x1="22" y1="64" x2="38" y2="66"/><line x1="22" y1="70" x2="38" y2="69"/><line x1="78" y1="64" x2="62" y2="66"/><line x1="78" y1="70" x2="62" y2="69"/></g>`;
-  // wangetjes
-  s += `<circle cx="28" cy="66" r="5" fill="#ff8fab" opacity="0.5"/><circle cx="72" cy="66" r="5" fill="#ff8fab" opacity="0.5"/>`;
-  return s;
+  return o;
 }
 
-function hoed(h: string | null): string {
-  switch (h) {
-    case 'pet':
-      return `<path d="M24 34 Q50 4 76 34 Z" fill="#ef476f" stroke="#a32347" stroke-width="2"/><path d="M60 32 Q82 30 90 36 Q74 40 58 36 Z" fill="#a32347"/>`;
-    case 'feesthoed':
-      return `<path d="M36 30 L50 -6 L64 30 Z" fill="#4d96ff" stroke="#1f5fc9" stroke-width="2"/><circle cx="50" cy="-7" r="5" fill="#ffd23f"/>
-        <circle cx="46" cy="16" r="2.5" fill="#ffd23f"/><circle cx="54" cy="8" r="2.5" fill="#ef476f"/><circle cx="53" cy="22" r="2.5" fill="#fff"/>`;
-    case 'tovenaar':
-      return `<path d="M22 32 Q50 24 78 32 L60 26 L44 -12 L40 26 Z" fill="#5a3ea8" stroke="#2d1d66" stroke-width="2"/>
-        <text x="46" y="18" font-size="10" fill="#ffd23f">★</text><text x="52" y="6" font-size="7" fill="#ffd23f">★</text>`;
-    case 'kroon':
-      return `<path d="M28 32 L30 8 L40 20 L50 4 L60 20 L70 8 L72 32 Z" fill="#ffd23f" stroke="#c99400" stroke-width="2"/>
-        <circle cx="50" cy="22" r="3.5" fill="#ef476f"/><circle cx="38" cy="25" r="2.5" fill="#4d96ff"/><circle cx="62" cy="25" r="2.5" fill="#5cc96e"/>`;
-    case 'bloem':
-      return `<g transform="translate(70 26)"><circle cx="0" cy="-7" r="6" fill="#ff8fab"/><circle cx="7" cy="0" r="6" fill="#ff8fab"/><circle cx="0" cy="7" r="6" fill="#ff8fab"/><circle cx="-7" cy="0" r="6" fill="#ff8fab"/><circle r="5" fill="#ffd23f"/></g>`;
-    case 'strik':
-      return `<g transform="translate(50 26)"><path d="M0 0 L-16 -9 L-16 9 Z" fill="#ef476f"/><path d="M0 0 L16 -9 L16 9 Z" fill="#ef476f"/><circle r="4.5" fill="#c9184a"/></g>`;
-    case 'koptelefoon':
-      return `<path d="M18 54 Q18 14 50 14 Q82 14 82 54" stroke="#333" stroke-width="5" fill="none"/><rect x="11" y="46" width="12" height="20" rx="5" fill="#4d96ff"/><rect x="77" y="46" width="12" height="20" rx="5" fill="#4d96ff"/>`;
-    default:
-      return '';
+const cache = new Map<string, string>();
+
+/** Geeft de avatar terug als SVG-tekst. `achtergrond: false` voor de arcade. */
+export function avatarSvg(a: Avatar, achtergrond = true): string {
+  const sleutel = JSON.stringify([a, achtergrond]);
+  let svg = cache.get(sleutel);
+  if (!svg) {
+    svg = new DbAvatar(SOORTEN[a.soort].style, opties(a, achtergrond) as never).toString();
+    // De robots tekenen een gekleurd vierkant als achtergrond: weglaten in de arcade.
+    if (!achtergrond) svg = svg.replace(/<rect width="128" height="128" fill="#[0-9a-fA-F]{6}"\/>/, '');
+    if (cache.size > 300) cache.clear();
+    cache.set(sleutel, svg);
   }
+  return svg;
 }
 
-function bril(b: string | null, dier: string): string {
-  const y = dier === 'kikker' ? 30 : 52;
-  const x = dier === 'kikker' ? 18 : 12;
-  switch (b) {
-    case 'rond':
-      return `<g fill="none" stroke="#333" stroke-width="2.5"><circle cx="${50 - x}" cy="${y}" r="9"/><circle cx="${50 + x}" cy="${y}" r="9"/><line x1="${50 - x + 9}" y1="${y}" x2="${50 + x - 9}" y2="${y}"/></g>`;
-    case 'zonnebril':
-      return `<g><rect x="${50 - x - 11}" y="${y - 7}" width="21" height="14" rx="5" fill="#222"/><rect x="${50 + x - 10}" y="${y - 7}" width="21" height="14" rx="5" fill="#222"/><line x1="${50 - x + 10}" y1="${y - 3}" x2="${50 + x - 10}" y2="${y - 3}" stroke="#222" stroke-width="3"/>
-        <line x1="${50 - x - 6}" y1="${y - 3}" x2="${50 - x - 1}" y2="${y - 5}" stroke="#fff" stroke-width="2" opacity=".7"/></g>`;
-    case 'sterbril':
-      return `<g fill="#ff8fab" stroke="#c9184a" stroke-width="1.5" opacity="0.95">
-        <path transform="translate(${50 - x} ${y}) scale(1.1)" d="M0 -10 L3 -3 L10 -3 L4 2 L6 9 L0 5 L-6 9 L-4 2 L-10 -3 L-3 -3 Z"/>
-        <path transform="translate(${50 + x} ${y}) scale(1.1)" d="M0 -10 L3 -3 L10 -3 L4 2 L6 9 L0 5 L-6 9 L-4 2 L-10 -3 L-3 -3 Z"/></g>`;
-    default:
-      return '';
+export const avatarUrl = (a: Avatar, achtergrond = true) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(avatarSvg(a, achtergrond));
+
+export { kleurSleutel };
+
+/** Willekeurige avatar, enkel met gratis onderdelen. */
+export function verrasAvatar(soort: Soort, isGratisFn: (soort: Soort, deel: string, waarde: string) => boolean): Avatar {
+  const info = SOORTEN[soort];
+  const delen: Record<string, string> = {};
+  const kies = <T,>(l: T[]) => l[Math.floor(Math.random() * l.length)];
+  for (const d of info.onderdelen) {
+    const opties = [...(d.optioneel ? ['geen'] : []), ...d.varianten].filter((v) => isGratisFn(soort, d.id, v));
+    delen[d.id] = kies(opties.length ? opties : [d.optioneel ? 'geen' : d.varianten[0]]);
   }
-}
-
-function extra(e: string | null): string {
-  switch (e) {
-    case 'sjaal':
-      return `<path d="M26 82 Q50 94 74 82 L74 90 Q50 102 26 90 Z" fill="#ef476f"/><rect x="58" y="88" width="10" height="18" rx="3" fill="#ef476f"/><line x1="30" y1="87" x2="70" y2="87" stroke="#fff" stroke-width="2" stroke-dasharray="4 4"/>`;
-    case 'vlinderdas':
-      return `<g transform="translate(50 90)"><path d="M0 0 L-12 -7 L-12 7 Z" fill="#4d96ff"/><path d="M0 0 L12 -7 L12 7 Z" fill="#4d96ff"/><circle r="3.5" fill="#1f5fc9"/></g>`;
-    case 'medaille':
-      return `<path d="M42 82 L50 96 L58 82" stroke="#4d96ff" stroke-width="4" fill="none"/><circle cx="50" cy="100" r="8" fill="#ffd23f" stroke="#c99400" stroke-width="2"/><text x="46" y="104" font-size="10" fill="#c99400">★</text>`;
-    case 'cape':
-      return `<path d="M22 80 L8 112 L92 112 L78 80 Z" fill="#9b5de5" opacity="0.9"/>`;
-    default:
-      return '';
+  for (const k of info.kleuren) {
+    const opties = k.waarden.filter((v) => isGratisFn(soort, kleurSleutel(k.id), v));
+    delen[kleurSleutel(k.id)] = kies(opties.length ? opties : [k.waarden[0]]);
   }
+  return { soort, delen };
 }
-
-/** Geeft de avatar terug als SVG-tekst. */
-export function avatarSvg(a: Avatar): string {
-  const c = KLEUREN[a.kleur] ?? a.kleur ?? '#ff8c42';
-  const d = donkerder(c);
-  const lijf = a.dier === 'robot' ? '' : `<ellipse cx="50" cy="98" rx="22" ry="14" fill="${a.dier === 'panda' ? '#333' : c}" stroke="${a.dier === 'panda' ? '#222' : d}" stroke-width="2"/>`;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-5 -14 110 128">
-    ${a.extra === 'cape' ? extra('cape') : ''}
-    ${lijf}
-    ${a.dier === 'robot' ? `<rect x="32" y="82" width="36" height="26" rx="6" fill="${c}" stroke="${d}" stroke-width="2"/>` : ''}
-    ${oren(a.dier, c, d)}
-    ${hoofd(a.dier, c, d)}
-    ${gezicht(a.dier, c, d)}
-    ${bril(a.bril, a.dier)}
-    ${hoed(a.hoed)}
-    ${a.extra && a.extra !== 'cape' ? extra(a.extra) : ''}
-  </svg>`;
-}
-
-export const avatarUrl = (a: Avatar) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(avatarSvg(a));

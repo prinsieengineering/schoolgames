@@ -1,68 +1,29 @@
-// Alles wat je met muntjes kan kopen. Prijs 0 = gratis vanaf de start.
+// Prijzen in de winkel. Alles wordt afgeleid uit de onderdelen van de avatarstijlen:
+// de eerste varianten zijn gratis, de rest koop je met muntjes.
 
-export type ItemSoort = 'dier' | 'kleur' | 'hoed' | 'bril' | 'extra';
+import type { Soort } from '../core/types';
+import { SOORTEN } from './avatar';
 
-export interface WinkelItem {
-  id: string;
-  soort: ItemSoort;
-  waarde: string;
-  naam: string;
-  prijs: number;
+export const itemId = (soort: Soort, deel: string, waarde: string) => `${soort}:${deel}:${waarde}`;
+
+/** Prijs van een onderdeel (0 = gratis). */
+export function prijs(soort: Soort, deel: string, waarde: string): number {
+  if (waarde === 'geen') return 0;
+  const info = SOORTEN[soort];
+  if (deel.startsWith('kleur:')) {
+    const k = info.kleuren.find((x) => `kleur:${x.id}` === deel);
+    const i = k ? k.waarden.indexOf(waarde) : 0;
+    return i < 3 ? 0 : 20;
+  }
+  const o = info.onderdelen.find((x) => x.id === deel);
+  if (!o) return 0;
+  const i = o.varianten.indexOf(waarde);
+  if (deel === 'scene') return 60;
+  if (o.optioneel) return 25 + i * 5;
+  return i < 3 ? 0 : Math.min(60, 10 + (i - 2) * 5);
 }
 
-const item = (soort: ItemSoort, waarde: string, naam: string, prijs: number): WinkelItem => ({
-  id: `${soort}:${waarde}`,
-  soort,
-  waarde,
-  naam,
-  prijs,
-});
+export const isGratis = (soort: Soort, deel: string, waarde: string) => prijs(soort, deel, waarde) === 0;
 
-export const WINKEL: WinkelItem[] = [
-  item('dier', 'vos', 'Vos', 0),
-  item('dier', 'beer', 'Beer', 0),
-  item('dier', 'kat', 'Kat', 0),
-  item('dier', 'konijn', 'Konijn', 0),
-  item('dier', 'kikker', 'Kikker', 40),
-  item('dier', 'panda', 'Panda', 50),
-  item('dier', 'uil', 'Uil', 60),
-  item('dier', 'eenhoorn', 'Eenhoorn', 120),
-  item('dier', 'draak', 'Draak', 150),
-  item('dier', 'robot', 'Robot', 150),
-
-  item('kleur', 'oranje', 'Oranje', 0),
-  item('kleur', 'bruin', 'Bruin', 0),
-  item('kleur', 'blauw', 'Blauw', 0),
-  item('kleur', 'grijs', 'Grijs', 0),
-  item('kleur', 'roze', 'Roze', 0),
-  item('kleur', 'groen', 'Groen', 0),
-  item('kleur', 'paars', 'Paars', 20),
-  item('kleur', 'geel', 'Geel', 20),
-  item('kleur', 'wit', 'Wit', 20),
-  item('kleur', 'rood', 'Rood', 20),
-  item('kleur', 'turkoois', 'Turkoois', 30),
-  item('kleur', 'zwart', 'Zwart', 30),
-
-  item('hoed', 'pet', 'Pet', 25),
-  item('hoed', 'strik', 'Strik', 25),
-  item('hoed', 'bloem', 'Bloem', 30),
-  item('hoed', 'feesthoed', 'Feesthoedje', 40),
-  item('hoed', 'koptelefoon', 'Koptelefoon', 60),
-  item('hoed', 'tovenaar', 'Tovenaarshoed', 90),
-  item('hoed', 'kroon', 'Kroon', 200),
-
-  item('bril', 'rond', 'Ronde bril', 25),
-  item('bril', 'zonnebril', 'Zonnebril', 45),
-  item('bril', 'sterbril', 'Sterrenbril', 70),
-
-  item('extra', 'sjaal', 'Sjaal', 30),
-  item('extra', 'vlinderdas', 'Vlinderdas', 35),
-  item('extra', 'cape', 'Superheldencape', 100),
-  item('extra', 'medaille', 'Gouden medaille', 250),
-];
-
-export const isGratis = (soort: ItemSoort, waarde: string) =>
-  WINKEL.some((i) => i.soort === soort && i.waarde === waarde && i.prijs === 0);
-
-export const heeftItem = (bezit: string[], soort: ItemSoort, waarde: string) =>
-  isGratis(soort, waarde) || bezit.includes(`${soort}:${waarde}`);
+export const heeftItem = (bezit: string[], soort: Soort, deel: string, waarde: string) =>
+  isGratis(soort, deel, waarde) || bezit.includes(itemId(soort, deel, waarde));

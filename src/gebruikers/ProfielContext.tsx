@@ -3,6 +3,10 @@ import type { AppInstellingen, Avatar, Leerjaar, Profiel } from '../core/types';
 import { opslag } from '../core/opslag';
 import { maakId } from '../core/random';
 import { zetGeluid } from '../core/geluid';
+import { normaliseerAvatar } from './avatar';
+
+/** Profielen laden en oude avatars (van versie 0.1) omzetten. */
+const laadProfielen = (): Profiel[] => opslag.profielen().map((p) => ({ ...p, avatar: normaliseerAvatar(p.avatar) }));
 
 interface ProfielContextWaarde {
   profielen: Profiel[];
@@ -38,13 +42,13 @@ export function nieuwProfiel(naam: string, leerjaar: Leerjaar, avatar: Avatar): 
 }
 
 export function ProfielProvider({ children }: { children: ReactNode }) {
-  const [profielen, setProfielen] = useState<Profiel[]>(() => opslag.profielen());
+  const [profielen, setProfielen] = useState<Profiel[]>(laadProfielen);
   const [actiefId, setActiefId] = useState<string | null>(() => sessionStorage.getItem('schoolgames.actief'));
   const [instellingen, setInst] = useState<AppInstellingen>(() => opslag.instellingen());
 
   useEffect(() => zetGeluid(instellingen.geluid), [instellingen.geluid]);
 
-  const herlaad = useCallback(() => setProfielen(opslag.profielen()), []);
+  const herlaad = useCallback(() => setProfielen(laadProfielen()), []);
 
   const kies = useCallback((id: string | null) => {
     setActiefId(id);
@@ -54,7 +58,7 @@ export function ProfielProvider({ children }: { children: ReactNode }) {
 
   const bewaar = useCallback((p: Profiel) => {
     opslag.bewaarProfiel(p);
-    setProfielen(opslag.profielen());
+    setProfielen(laadProfielen());
   }, []);
 
   const maak = useCallback(
@@ -69,7 +73,7 @@ export function ProfielProvider({ children }: { children: ReactNode }) {
   const verwijder = useCallback(
     (id: string) => {
       opslag.verwijderProfiel(id);
-      setProfielen(opslag.profielen());
+      setProfielen(laadProfielen());
       if (actiefId === id) kies(null);
     },
     [actiefId, kies],

@@ -1,4 +1,4 @@
-﻿// 🐸 Kikkersprong (soort B): steek de rivier over door telkens op de
+// 🐸 Kikkersprong (soort B): steek de rivier over door telkens op de
 // waterlelie met het juiste antwoord te springen.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -31,7 +31,7 @@ type Fase = 'kiezen' | 'springen' | 'schuiven' | 'zinken';
 export function Kikkersprong({ spel, bron, avatar, leerjaar, onEinde }: ArcadeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const factor = tempo(leerjaar);
-  const avatarImg = useMemo(() => laadBeeld(avatarUrl(avatar)), [avatar]);
+  const avatarImg = useMemo(() => laadBeeld(avatarUrl(avatar, false)), [avatar]);
   const [vraag, setVraag] = useState<Vraag>(() => bron.volgende());
   const [melding, setMelding] = useState('');
   const [hud, setHud] = useState({ hartjes: 3, punten: 0, rij: 0, tijd: SPEELTIJD, overkant: 0 });
@@ -246,7 +246,7 @@ export function Kikkersprong({ spel, bron, avatar, leerjaar, onEinde }: ArcadePr
       ctx.restore();
     });
     // kikker (= de avatar)
-    if (avatarImg.complete) ctx.drawImage(avatarImg, s.kikker.x - 30, s.kikker.y - 62, 60, 70);
+    if (avatarImg.complete) ctx.drawImage(avatarImg, s.kikker.x - 36, s.kikker.y - 64, 72, 72);
     tekenDeeltjes(ctx, s.deeltjes);
     tekenZweef(ctx, s.zweef, dt);
     // voortgang

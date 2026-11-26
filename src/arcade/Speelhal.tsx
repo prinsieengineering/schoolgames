@@ -18,6 +18,7 @@ import { Torenbouwer } from './torenbouwer/Torenbouwer';
 import { Kikkersprong } from './kikkersprong/Kikkersprong';
 import { Touwtrekken, type DuoSpeler } from './touwtrekken/Touwtrekken';
 import { geluid } from '../core/geluid';
+import { standaardAvatar } from '../gebruikers/avatar';
 import { stopSpreken } from '../core/spraak';
 
 interface ArcadeDef {
@@ -247,7 +248,7 @@ function DuoSetup({ ik, anderen, onStart }: { ik: Profiel; anderen: Profiel[]; o
   const [spel1, setSpel1] = useState<SpelDef | null>(null);
 
   const gastProfiel: Profiel = useMemo(
-    () => ({ ...ik, id: 'gast', naam: 'Gast', leerjaar: gastLj, avatar: { dier: 'beer', kleur: 'blauw', hoed: null, bril: null, extra: null }, spellen: {}, instellingen: { frans: true } }),
+    () => ({ ...ik, id: 'gast', naam: 'Gast', leerjaar: gastLj, avatar: standaardAvatar('robot'), spellen: {}, instellingen: { frans: true } }),
     [ik, gastLj],
   );
 

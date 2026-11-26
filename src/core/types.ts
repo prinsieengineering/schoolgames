@@ -65,12 +65,12 @@ export interface SpelDef {
 
 // ---------- Gebruikers ----------
 
+export type Soort = 'kat' | 'hond' | 'robot';
+
+/** Een avatar: soort + gekozen onderdelen (bv. eyes: "happy", "kleur:fur": "#f9b379"). */
 export interface Avatar {
-  dier: string;
-  kleur: string;
-  hoed: string | null;
-  bril: string | null;
-  extra: string | null;
+  soort: Soort;
+  delen: Record<string, string>;
 }
 
 export interface SpelVoortgang {

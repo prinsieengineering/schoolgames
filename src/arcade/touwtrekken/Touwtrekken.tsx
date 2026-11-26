@@ -1,4 +1,4 @@
-﻿// 🪢 Touwtrekken (samen spelen): twee kinderen op één toestel. Elk krijgt
+// 🪢 Touwtrekken (samen spelen): twee kinderen op één toestel. Elk krijgt
 // vragen op zijn eigen niveau; elk juist antwoord trekt het touw naar jou.
 
 import { useMemo, useRef, useState } from 'react';
@@ -22,7 +22,7 @@ export interface DuoSpeler {
 
 export function Touwtrekken({ spelers, onEinde }: { spelers: [DuoSpeler, DuoSpeler]; onEinde: (winnaar: 0 | 1 | null) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const beelden = useMemo(() => spelers.map((sp) => laadBeeld(avatarUrl(sp.avatar))), [spelers]);
+  const beelden = useMemo(() => spelers.map((sp) => laadBeeld(avatarUrl(sp.avatar, false))), [spelers]);
   const [tijd, setTijd] = useState(SPEELTIJD);
   const s = useRef({ pos: 0, getoond: 0, t: 0, tijd: 0, klaar: false, winnaar: null as 0 | 1 | null, deeltjes: [] as Deeltje[] }).current;
 
@@ -74,8 +74,8 @@ export function Touwtrekken({ spelers, onEinde }: { spelers: [DuoSpeler, DuoSpel
     ctx.fillRect(B / 2 + off - 6, H / 2 + 8, 12, 30);
     // spelers
     const wiebel = Math.sin(s.t * 10) * 3;
-    if (beelden[0].complete) ctx.drawImage(beelden[0], 10 + off * 0.25 + wiebel, H / 2 - 70, 80, 93);
-    if (beelden[1].complete) ctx.drawImage(beelden[1], B - 90 + off * 0.25 - wiebel, H / 2 - 70, 80, 93);
+    if (beelden[0].complete) ctx.drawImage(beelden[0], 10 + off * 0.25 + wiebel, H / 2 - 78, 92, 92);
+    if (beelden[1].complete) ctx.drawImage(beelden[1], B - 90 + off * 0.25 - wiebel, H / 2 - 78, 92, 92);
     tekst(ctx, spelers[0].naam, 50 + off * 0.25, H / 2 - 90, 20, '#ef476f', '#fff');
     tekst(ctx, spelers[1].naam, B - 50 + off * 0.25, H / 2 - 90, 20, '#4d96ff', '#fff');
     tekenDeeltjes(ctx, s.deeltjes);
