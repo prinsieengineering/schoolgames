@@ -62,7 +62,7 @@ Wil je een andere stijl? Pas dan enkel `src/gebruikers/avatar.ts` aan. De prijze
 
 ```
 src/
-├── core/            Basis: types, opslag (lokaal), beloningen, badges, spraak, geluid
+├── core/            Basis: types, opslag (lokaal), beloningen, badges, spraak, geluid, tafels (tafelgenerator + tafelkeuze)
 ├── gebruikers/      Profielen, avatar (SVG-lagen), winkel, trofeeënkast, ouderzicht (pincode)
 ├── spelmotor/       Quizscherm, vraagkaart, cijferklavier, visuals (klok, breuken, tellen), resultaat
 ├── spelletjes/      leerjaar1/ ... leerjaar6/ + register.ts
@@ -78,6 +78,8 @@ src/
 
 Het spel verschijnt dan vanzelf in de wereld van dat leerjaar, **en** het is meteen bruikbaar als vak in alle arcadespelletjes.
 
+**Een tafelspel?** Gebruik dan `tafelVraag()` uit `src/core/tafels.ts` en zet `tafelkeuze: true` in je `SpelDef`. Je spel krijgt dan vanzelf de tafelkeuze (welke tafels, maal of delen). Kijk naar Tafelschelpen als voorbeeld.
+
 ### Een nieuw arcadespel toevoegen
 Maak een map in `src/arcade/`, schrijf een component met de `ArcadeProps` uit `kern/ui.tsx`, en voeg het toe aan de lijst `ARCADE` in `Speelhal.tsx`.
 
@@ -92,4 +94,15 @@ Maak een map in `src/arcade/`, schrijf een component met de `ArcadeProps` uit `k
 | 5e 🚂 | Mots magiques · Procentenmarkt · 't Kofschip |
 | 6e 🚀 | Kortingsjager · Oppervlakte-ontdekker · Être ou avoir ? |
 
-**Speelhal:** 👾 Monsterjacht · 🎈 Ballonnen prikken · 🐸 Kikkersprong · 🔨 Mollenmep · 🏎️ Rekenrace · 🏗️ Torenbouwer · 🪢 Touwtrekken (2 spelers)
+**Speelhal:** 👾 Monsterjacht · 🎈 Ballonnen prikken · 🐸 Kikkersprong · 🔨 Mollenmep · 🏎️ Rekenrace · 🐬 Dolfijnenrace · 🏗️ Torenbouwer · 🪢 Touwtrekken (2 spelers)
+
+### 🐬 Dolfijnenrace
+Je bent een dolfijn en je zwemt een race tegen een zeemeermin. Er komen poorten van bellen aan met een antwoord in elke baan: zwem door het juiste antwoord voor een turbo en haal de zeemeermin in. Bij een fout antwoord zwem je gewoon wat trager verder en zie je het juiste antwoord. Er is geen klok: de race duurt tot de finish, en de zeemeermin wacht op je als je achterop raakt. Onderweg zwem je door vier stukken wereld: het koraalrif, het kelpwoud, het gezonken schip en de lichtgevende diepzee. Besturing: tik op een baan, gebruik de knoppen ▲ ▼ of de pijltjes ↑ ↓. Werkt met elk vak, maar is gemaakt voor de tafels van het 2e leerjaar.
+
+### ✖️ Tafelkeuze
+Bij alle tafelspelletjes (Tafelschelpen, Tafelklim, en elk nieuw tafelspel) kan je kiezen **welke tafels** je oefent: vink bijvoorbeeld de tafels van 2, 5 en 10 aan. Kies daarnaast **maal**, **delen** of **allebei**. De keuze wordt per kind onthouden en werkt overal:
+- in het spelletje zelf: de kaart *🎯 Mijn tafels* naast de gewone niveaus;
+- in de Speelhal: na het kiezen van een tafelspel als vak;
+- in het ouderzicht: zo kan je als ouder de tafels van deze week klaarzetten.
+
+Een ronde met eigen tafels geeft XP, muntjes en badges. De sterren van de niveaus verdien je met de gewone niveaus.

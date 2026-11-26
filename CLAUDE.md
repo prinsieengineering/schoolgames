@@ -13,7 +13,7 @@ Leerspelletjes voor kinderen van het 1e tot het 6e leerjaar (Vlaanderen), met ee
 - Opslag: lokaal in de browser (`src/core/opslag.ts`, adapter-interface). Geen server, geen tracking, geen externe diensten.
 
 ## Blokken
-- `src/core/`: types, opslag, beloningen (XP, sterren, muntjes), badges, spraak, geluid
+- `src/core/`: types, opslag, beloningen (XP, sterren, muntjes), badges, spraak, geluid, tafels (gedeelde tafelgenerator)
 - `src/gebruikers/`: profielen, avatar en AvatarMaker, winkel, trofeeën, ouderzicht
 - `src/spelmotor/`: quizscherm, vraagkaart, visuals, resultaat
 - `src/spelletjes/leerjaar1..6/`: de spelletjes; `register.ts` bundelt ze
@@ -23,6 +23,9 @@ Leerspelletjes voor kinderen van het 1e tot het 6e leerjaar (Vlaanderen), met ee
 
 ## Regels bij wijzigingen
 - Een spelletje is een `SpelDef` met `maak(niveau)`. Elke `Vraag` heeft **altijd** `opties` met het juiste antwoord erin, uniek, minstens 2 opties. Die worden gebruikt door de arcade.
+- `maak(niveau, keuze?)`: het tweede argument is optioneel en dient voor eigen keuzes van het kind, zoals de tafelkeuze. Spelletjes zonder keuze negeren het gewoon.
+- **Tafelspelletjes** (maal- en deeltafels) gebruiken altijd `tafelVraag()` uit `src/core/tafels.ts` en zetten `tafelkeuze: true` in hun `SpelDef`. Dan krijgt het kind vanzelf de **tafelkeuze**: aanvinken welke tafels (bv. 2, 5 en 10) en kiezen tussen *maal*, *delen* of *allebei*. Die keuze wordt per kind bewaard (`profiel.instellingen.tafels`) en geldt in het quizscherm, in de Speelhal en in het ouderzicht. Schrijf geen eigen tafelgenerator meer.
+- Een ronde met een eigen tafelkeuze geeft XP, muntjes en badges, maar telt niet mee voor de sterren van een niveau (die horen bij de vaste niveaus).
 - Nieuw spel = toevoegen aan de lijst van zijn leerjaar. Het verschijnt dan automatisch in de wereld én als vak in de Speelhal.
 - Nieuw arcadespel = map in `src/arcade/`, component met `ArcadeProps` (`kern/ui.tsx`), toevoegen aan `ARCADE` in `Speelhal.tsx`. Speltoestand in `useRef`, HUD-state enkel bijwerken als iets verandert. Test ook met React StrictMode (effects lopen dubbel in dev).
 - Badges: een object toevoegen in `src/core/badges.ts`. Beloon inzet en vooruitgang, nooit straffen.

@@ -3,6 +3,8 @@
 *Versie 1, 26 november 2026.*
 
 > **Status (26/11/2026):** versie 0.1 is gebouwd: 14 spelletjes, de Speelhal met 5 arcadespelletjes, profielen, winkel, badges en ouderzicht. Zie [README.md](README.md).
+> **Update (26/11/2026):** er kwam een **tafelkeuze** bij voor alle tafelspelletjes (zie §8b) en een nieuw arcadespel, **🐬 Dolfijnenrace** (zie §4c). De Speelhal heeft nu 8 arcadespelletjes.
+>
 > **Afwijking van dit voorstel:** de arcadespelletjes gebruiken een kleine eigen canvasmotor (`src/arcade/kern/`) in plaats van Phaser. Zo blijft de app klein (ongeveer 350 KB) en past alles in één HTML-bestand dat je aan andere ouders kan doorgeven. Phaser kan later nog, als er zwaardere spelletjes bij komen. Ook de avatar is voorlopig zelf getekend in SVG (zonder Kenney-bestanden), zodat er niets gedownload moest worden. De tekenfunctie zit in één bestand en is later makkelijk te vervangen.
 
 ---
@@ -108,7 +110,7 @@ Het kind start in de wereld van zijn eigen leerjaar, maar mag ook vroegere werel
 | Spel | Vak | Niveau 1 → 3 |
 |---|---|---|
 | **Rekenen tot 100** | rekenen | tientallen, zonder brug, met brug |
-| **Tafelschelpen** | rekenen | ×2 en ×10, ×5 en ×1, gemengd met delen |
+| **Tafelschelpen** | rekenen | ×2 en ×10, ×5 en ×1, gemengd met delen, of 🎯 eigen tafelkeuze (§8b) |
 | **Hoe laat is het?** 🕐 | klok | hele uren, halve uren, kwartier |
 | **Strandwinkel** 💶 | geld | munten tellen, betalen, wisselgeld |
 | **Luisterdictee** 🔊 | spelling | het woord horen en schrijven |
@@ -116,7 +118,7 @@ Het kind start in de wereld van zijn eigen leerjaar, maar mag ook vroegere werel
 ### ⛰️ 3e leerjaar: De Tafelberg
 | Spel | Vak | Niveau 1 → 3 |
 |---|---|---|
-| **Tafelklim** | rekenen | alle maaltafels, deeltafels, gemengd met optionele snelheid |
+| **Tafelklim** | rekenen | alle maaltafels, deeltafels, gemengd met optionele snelheid, of 🎯 eigen tafelkeuze (§8b) |
 | **Getallen tot 1000** | getallen | plaatswaarde (H-T-E), +/− met honderdtallen, HTE +/− |
 | **Pizza-breuken** 🍕 | breuken | ½ en ¼, stambreuken, niet-stambreuken |
 | **Ei of ij? Au of ou?** | spelling | ei/ij, au/ou, gemengd |
@@ -256,6 +258,7 @@ Er zijn **twee soorten** arcadespelletjes. Dat onderscheid is belangrijk voor de
 | 🎈 **Ballonnen prikken** | Ballonnen met antwoorden zweven omhoog. Het kind prikt de juiste ballon met een pijltje van de avatar onderaan. Bij een foute ballon gebeurt er niets: die zweeft gewoon weg. | ◀ ▶ + schieten, of tikken | 1e–3e (getallen, letters, klok) | S |
 | 🐸 **Kikkersprong** | De avatar moet een rivier oversteken. Op elke rij waterlelies staan antwoorden en het kind springt naar de juiste. Op een foute lelie zakt hij zachtjes weg en probeert hij het opnieuw. Een juiste rij opent de volgende. | tik of ← ↑ → | 2e–5e (tafels, spelling ei/ij, Frans) | S |
 | 🏎️ **Rekenrace** | De avatar rijdt in een kart op 3 rijstroken. Er komen poorten aan met een antwoord per rijstrook, en het kind stuurt naar de juiste poort voor een turbo. Een foute poort kost snelheid. De snelheid loopt op. | ◀ ▶ of vegen | 3e–6e (snel hoofdrekenen, d/t) | M |
+| 🐬 **Dolfijnenrace** | De avatar is een dolfijn die een race zwemt tegen een zeemeermin. Poorten van bellen komen aan met een antwoord in elk van de 3 banen. Door het juiste antwoord zwemmen geeft een turbo, een fout antwoord maakt je even trager (geen straf, wel het juiste antwoord). Geen klok: de race duurt tot de finish en de zeemeermin wacht als je achterop raakt. De wereld verandert onderweg: koraalrif, kelpwoud, gezonken schip, lichtgevende diepzee. | tik op een baan, ▲ ▼ of ↑ ↓ | 1e–3e (tafels!) | M |
 | 🧺 **Vangmand** | Dingen vallen uit de lucht en het kind vangt de juiste met een mand. De opdracht geldt voor een hele golf, bv. "vang alle veelvouden van 4", "vang de breuken groter dan ½", "vang de woorden met *ou*". | ◀ ▶ of slepen | alle leerjaren, goed voor categoriseren | S |
 | 🔨 **Mollenmep** | Mollen steken hun kop op met een antwoord op een bordje. Het kind tikt snel op de mollen met het juiste antwoord. | tikken of klikken | 1e–3e, ideaal op tablet | S |
 | 🐛 **Rupsje Rekenhonger** | De rups kruipt over het veld en moet de blaadjes met het juiste antwoord opeten. Een juist blaadje maakt haar langer, een fout blaadje maakt haar misselijk (kortere rups). | pijltjes of vegen | 2e–6e | M |
@@ -402,6 +405,17 @@ schoolgames/
 | 6e | Kortingsjager (procenten, korting) | Être ou avoir? (Frans) |
 
 Daarmee zitten in de eerste versie de spelvormen **meerkeuze**, **invullen** (met cijferklavier), **visuals** (blokjes, klok, taart/strook) en **voorlezen** in nl-BE en fr-FR. Dictee, slepen en tekenen volgen in fase 4. *Petit français* voor het 3e en 4e kan meeliften op dezelfde code als *Mots magiques*, met eenvoudigere woordjes.
+
+### 8b. Tafelkeuze (beslist op 26 november 2026)
+
+| Vraag | Beslissing |
+|---|---|
+| Welke spelletjes? | **Alle spelletjes met maal- of deeltafels**: nu Tafelschelpen (2e) en Tafelklim (3e), en elk nieuw tafelspel. Ze gebruiken één gedeelde generator (`src/core/tafels.ts`). |
+| Wat kies je? | De **tafels** die je oefent (aanvinken, bv. 2, 5 en 10) en de **soort**: *maal*, *delen* of *allebei*. Minstens één tafel. |
+| Waar kies je? | In het spelletje (kaart *🎯 Mijn tafels* naast de niveaus), in de Speelhal na het kiezen van het vak, en in het ouderzicht. |
+| Bewaren | **Per kind** (`profiel.instellingen.tafels`), één keuze voor alle tafelspelletjes samen: "de tafels van deze week". |
+| Sterren | Een ronde met eigen tafels geeft XP, muntjes en badges, maar geen sterren voor een niveau. Zo blijven de niveaus en de wereldbadges betekenisvol. |
+| Arcade | In de Speelhal gebruikt het spel de eigen tafels op elk niveau. Het niveau past zich nog aan, maar de tafels blijven die van het kind. |
 
 ### Nog open
 - Komt de naam "Schoolgames" ook in het spel, of kiezen we een kindvriendelijke naam?
