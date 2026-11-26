@@ -545,6 +545,10 @@ h3 {
   transition: transform 0.15s;
   font-size: 1.1rem;
 }
+.spel-kaart.snelstart {
+  background: linear-gradient(150deg, #fff 55%, #ffe3c9);
+  outline: 3px solid var(--wkleur);
+}
 .spel-kaart:hover {
   transform: translateY(-4px);
 }

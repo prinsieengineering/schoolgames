@@ -28,6 +28,7 @@ Leerspelletjes voor kinderen van de 3e kleuterklas (`leerjaar: 0`) tot het 6e le
 - Een ronde met een eigen tafelkeuze geeft XP, muntjes en badges, maar telt niet mee voor de sterren van een niveau (die horen bij de vaste niveaus).
 - Nieuw spel = toevoegen aan de lijst van zijn leerjaar. Het verschijnt dan automatisch in de wereld én als vak in de Speelhal.
 - Nieuw arcadespel = map in `src/arcade/`, component met `ArcadeProps` (`kern/ui.tsx`), toevoegen aan `ARCADE` in `Speelhal.tsx`. Speltoestand in `useRef`, HUD-state enkel bijwerken als iets verandert. Test ook met React StrictMode (effects lopen dubbel in dev).
+- Arcadespel meteen klaarzetten in een wereld (vast spelletje, eventueel vaste tafels): een object toevoegen in `src/wereld/snelstart.ts`.
 - Badges: een object toevoegen in `src/core/badges.ts`. Beloon inzet en vooruitgang, nooit straffen.
 - Toon een leerjaar altijd met `leerjaarNaam()` / `leerjaarKort()` uit `src/wereld/werelden.ts` (0 = 3e kleuterklas), nooit met `${lj}e leerjaar`.
 - **Hoeveelheden** toon je altijd als getalbeeld (twee rijen, van links naar rechts en eerst boven aangevuld: 3 = ●● boven ●, 10 = 2×5; per tiental een nieuw blok), via `src/core/getalbeeld.ts`. Gebruik `visual: { type: 'tel' }` of een antwoord met hetzelfde plaatje herhaald (bv. `'🐟'.repeat(4)`): quizknoppen en arcadelabels (`label()` in `kern/teken.ts`) tekenen dat dan vanzelf als getalbeeld. Nooit een los rijtje.

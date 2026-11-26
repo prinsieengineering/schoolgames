@@ -9,12 +9,12 @@ import { Ouderzicht } from './gebruikers/Ouderzicht';
 import { Thuis } from './wereld/Thuis';
 import { SpelScherm } from './spelmotor/SpelScherm';
 import { vindSpel } from './spelletjes/register';
-import { Speelhal } from './arcade/Speelhal';
+import { Speelhal, type DirecteStart } from './arcade/Speelhal';
 
 type Scherm =
   | { naam: 'thuis' }
   | { naam: 'spel'; spelId: string }
-  | { naam: 'speelhal' }
+  | { naam: 'speelhal'; direct?: DirecteStart }
   | { naam: 'winkel' }
   | { naam: 'trofeeen' }
   | { naam: 'ouders' };
@@ -33,12 +33,18 @@ export function App() {
       return spel ? <SpelScherm spel={spel} terug={naarThuis} /> : null;
     }
     case 'speelhal':
-      return <Speelhal terug={naarThuis} />;
+      return <Speelhal key={scherm.direct?.arcadeId ?? 'lijst'} terug={naarThuis} direct={scherm.direct} />;
     case 'winkel':
       return <Winkel terug={naarThuis} />;
     case 'trofeeen':
       return <Trofeeen terug={naarThuis} />;
     default:
-      return <Thuis onSpel={(id) => setScherm({ naam: 'spel', spelId: id })} onGa={(b) => setScherm({ naam: b })} />;
+      return (
+        <Thuis
+          onSpel={(id) => setScherm({ naam: 'spel', spelId: id })}
+          onArcade={(s) => setScherm({ naam: 'speelhal', direct: { arcadeId: s.arcadeId, spelId: s.spelId, keuze: s.keuze } })}
+          onGa={(b) => setScherm({ naam: b })}
+        />
+      );
   }
 }

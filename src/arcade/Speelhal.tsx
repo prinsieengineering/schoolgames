@@ -56,15 +56,30 @@ type Fase =
   | { naam: 'duo-spelen'; spelers: [DuoSpeler, DuoSpeler] }
   | { naam: 'duo-klaar'; spelers: [DuoSpeler, DuoSpeler]; winnaar: 0 | 1 | null; beloningen: (Beloning | null)[] };
 
-export function Speelhal({ terug }: { terug: () => void }) {
+/** Meteen een arcadespel starten met een vast spelletje (snelstart vanuit een wereld). */
+export interface DirecteStart {
+  arcadeId: string;
+  spelId: string;
+  keuze?: SpelKeuze;
+}
+
+export function Speelhal({ terug, direct }: { terug: () => void; direct?: DirecteStart }) {
   const { profiel, bewaar } = useActief();
   const { profielen } = useProfielen();
-  const [fase, setFase] = useState<Fase>({ naam: 'lijst' });
 
-  function start(arcade: ArcadeDef, spel: SpelDef, keuze?: SpelKeuze) {
+  function spelenFase(arcade: ArcadeDef, spel: SpelDef, keuze?: SpelKeuze): Fase {
     const bron = new Vraagbron(spel, hoogsteOpenNiveau(profiel, spel.id, spel.niveaus.length), keuze);
-    setFase({ naam: 'spelen', arcade, spel, keuze, bron, poging: Date.now() });
+    return { naam: 'spelen', arcade, spel, keuze, bron, poging: Date.now() };
   }
+  const [fase, setFase] = useState<Fase>(() => {
+    const arcade = ARCADE.find((a) => a.id === direct?.arcadeId);
+    const spel = direct && alleSpelletjes.find((s) => s.id === direct.spelId);
+    return arcade?.Component && spel ? spelenFase(arcade, spel, direct.keuze) : { naam: 'lijst' };
+  });
+
+  const start = (arcade: ArcadeDef, spel: SpelDef, keuze?: SpelKeuze) => setFase(spelenFase(arcade, spel, keuze));
+  // Gestart vanuit een wereld: "terug" tijdens het spel gaat terug naar die wereld.
+  const terugNaarWereld = !!direct && (fase.naam === 'spelen' || fase.naam === 'klaar');
 
   const terugKnop = (actie: () => void, label = '← Terug') => (
     <button
@@ -81,7 +96,7 @@ export function Speelhal({ terug }: { terug: () => void }) {
   return (
     <div className="scherm speelhal">
       <div className="kopbalk">
-        {fase.naam === 'lijst' ? terugKnop(terug) : terugKnop(() => setFase({ naam: 'lijst' }), '← Speelhal')}
+        {fase.naam === 'lijst' || terugNaarWereld ? terugKnop(terug) : terugKnop(() => setFase({ naam: 'lijst' }), '← Speelhal')}
         <h1>
           {fase.naam === 'lijst' || fase.naam === 'duo-setup' ? '🕹️ Speelhal' : 'arcade' in fase ? `${fase.arcade.icoon} ${fase.arcade.titel}` : '🪢 Touwtrekken'}
         </h1>
