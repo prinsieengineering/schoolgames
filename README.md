@@ -25,7 +25,20 @@ npm run build:deel
 
 Dat maakt `deel/Schoolgames.html` (ongeveer 350 KB). Stuur dat bestand door (mail, USB-stick, WhatsApp, ...). Ouders dubbelklikken erop en het spel opent in hun browser. Het werkt ook offline.
 
-**Optie 2: online zetten (een link doorsturen)**
+**Optie 2: de online versie (Cloudflare Pages)**
+
+Het spel staat online op **https://schoolgames-1vr.pages.dev**. Die link kan je gewoon doorsturen.
+
+Een nieuwe versie online zetten:
+
+```powershell
+$env:CLOUDFLARE_ACCOUNT_ID = '6ad1cc1591646ca4366e1534d62ea0d1'
+npm run deploy
+```
+
+(De eerste keer op een nieuwe pc: eerst `npx wrangler login`.)
+
+**Optie 3: zelf ergens anders online zetten**
 
 ```powershell
 npm run build

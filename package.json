@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "build:deel": "tsc -b && vite build --mode deel && node -e \"require('fs').renameSync('deel/index.html','deel/Schoolgames.html')\"",
     "preview": "vite preview",
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name schoolgames --branch main",
     "typecheck": "tsc -b"
   },
   "dependencies": {
