@@ -1,6 +1,6 @@
 // 🏰 4e leerjaar: Het Breukenkasteel
 import type { SpelDef } from '../../core/types';
-import { breukTekst, getalOpties, kies, opties, rand, schud } from '../../core/random';
+import { breukTekst, getalOpties, kies, komma, opties, rand, schud } from '../../core/random';
 import { DT_UITLEG, DT_ZINNEN } from '../../inhoud/werkwoorden';
 
 const breukenduel: SpelDef = {
@@ -73,4 +73,59 @@ const dOfT: SpelDef = {
   },
 };
 
-export const LEERJAAR4: SpelDef[] = [breukenduel, dOfT];
+// ---------- Kommakompas ----------
+const kommakompas: SpelDef = {
+  id: 'kommakompas',
+  titel: 'Kommakompas',
+  beschrijving: 'Tienden, honderdsten en rekenen met kommagetallen.',
+  icoon: '🧭',
+  leerjaar: 4,
+  vak: 'getallen',
+  niveaus: ['tienden', 'vergelijken', 'optellen en aftrekken'],
+  doelen: ['Kommagetallen: tienden en honderdsten, vergelijken, optellen en aftrekken'],
+  maak(n) {
+    if (n === 0) {
+      const t = rand(1, 9);
+      const antwoord = komma(t / 10);
+      return {
+        sleutel: `tiende${t}`,
+        prompt: 'Welk kommagetal hoort bij het gekleurde deel?',
+        visual: { type: 'breuk', teller: t, noemer: 10, vorm: 'strook' },
+        antwoord,
+        opties: opties(antwoord, [komma((10 - t) / 10), `0,0${t}`, String(t), komma((t + 1) / 10), komma(Math.max(1, t - 1) / 10)]),
+        uitleg: `De strook heeft 10 stukken. ${t} van de 10 = ${t} tienden = ${antwoord}.`,
+      };
+    }
+    if (n === 1) {
+      // klassieke valkuil: 0,5 is groter dan 0,45 en 0,405
+      const basis = rand(1, 9);
+      const kandidaten = [basis / 10, basis / 10 - 0.05 + rand(0, 4) / 100, basis / 100 + rand(1, 9) / 1000, (basis - 1) / 10 + rand(10, 99) / 1000]
+        .map((x) => Math.round(x * 1000) / 1000)
+        .filter((x) => x > 0);
+      const uniek = [...new Set(kandidaten)].slice(0, 3);
+      const max = Math.max(...uniek);
+      return {
+        sleutel: uniek.map(komma).sort().join('|'),
+        prompt: 'Welk kommagetal is het grootst?',
+        antwoord: komma(max),
+        opties: opties(komma(max), uniek.map(komma), 3),
+        uitleg: 'Vergelijk eerst de tienden (het eerste cijfer na de komma), dan de honderdsten. Langer is niet groter!',
+      };
+    }
+    const a = rand(10, 99) / 10;
+    const b = rand(1, 50) / 10;
+    const plus = Math.random() < 0.5 || b > a;
+    const uitkomst = Math.round((plus ? a + b : a - b) * 10) / 10;
+    return {
+      sleutel: `${a}${plus ? '+' : '-'}${b}`,
+      prompt: `${komma(a)} ${plus ? '+' : '−'} ${komma(b)} = ?`,
+      voorlezen: `${komma(a)} ${plus ? 'plus' : 'min'} ${komma(b)}`,
+      antwoord: komma(uitkomst),
+      opties: opties(komma(uitkomst), [uitkomst + 1, uitkomst - 1, uitkomst + 0.1, uitkomst - 0.1, uitkomst * 10].filter((x) => x >= 0).map((x) => komma(Math.round(x * 10) / 10))),
+      invoer: 'getal',
+      uitleg: 'Zet de komma’s onder elkaar: tienden bij tienden, eenheden bij eenheden.',
+    };
+  },
+};
+
+export const LEERJAAR4: SpelDef[] = [breukenduel, kommakompas, dOfT];

@@ -8,6 +8,7 @@ export type Vak =
   | 'klok'
   | 'breuken'
   | 'procenten'
+  | 'meten'
   | 'lezen'
   | 'spelling'
   | 'frans';
@@ -20,7 +21,11 @@ export type Visual =
   | { type: 'klok'; uur: number; minuut: number }
   | { type: 'breuk'; teller: number; noemer: number; vorm: 'taart' | 'strook' }
   | { type: 'emoji'; tekst: string }
-  | { type: 'kleur'; kleur: string };
+  | { type: 'kleur'; kleur: string }
+  /** Munten en briefjes, bedragen in eurocent (bv. 200 = 2 euro, 50 = 50 cent). */
+  | { type: 'munten'; centen: number[] }
+  /** Rechthoek met maten (omtrek / oppervlakte). */
+  | { type: 'rechthoek'; breedte: number; hoogte: number; eenheid: string };
 
 /**
  * Eén opdracht. Elke vraag heeft ALTIJD antwoordopties (ook als het quizscherm

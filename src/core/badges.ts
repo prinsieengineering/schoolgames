@@ -65,6 +65,8 @@ export const BADGES: BadgeDef[] = [
   { id: 'ballonnen', titel: 'Ballonnenprikker', icoon: '🎈', uitleg: 'Prik 30 juiste ballonnen.', check: (p) => teller(p, 'ballonnen') >= 30 },
   { id: 'kikker', titel: 'Rivierheld', icoon: '🐸', uitleg: 'Steek de rivier over in Kikkersprong.', check: (p) => teller(p, 'overkant') >= 1 },
   { id: 'toren', titel: 'Wolkenkrabber', icoon: '🏗️', uitleg: 'Bouw een toren van 15 blokken.', check: (p) => teller(p, 'toren-max') >= 15 || (p.arcade['torenbouwer']?.record ?? 0) >= 150 },
+  { id: 'mollen', titel: 'Mollenvanger', icoon: '🔨', uitleg: 'Tik in totaal 25 juiste mollen.', check: (p) => teller(p, 'mollen') >= 25 },
+  { id: 'racer', titel: 'Turbopiloot', icoon: '🏎️', uitleg: 'Rij door 20 juiste poorten in de Rekenrace.', check: (p) => teller(p, 'race') >= 20 },
   { id: 'teamspeler', titel: 'Teamspeler', icoon: '🪢', uitleg: 'Speel Touwtrekken met iemand samen.', check: (p) => teller(p, 'touwtrekken') >= 1 },
   { id: 'record', titel: 'Record!', icoon: '🏆', uitleg: 'Verbeter je eigen record in de Speelhal.', check: (p) => teller(p, 'records') >= 1 },
   { id: 'spaarpot', titel: 'Spaarpot', icoon: '🐷', uitleg: 'Spaar 300 muntjes.', check: (p) => p.muntjes >= 300 },

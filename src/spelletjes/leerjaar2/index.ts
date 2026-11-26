@@ -82,4 +82,53 @@ const hoeLaat: SpelDef = {
   },
 };
 
-export const LEERJAAR2: SpelDef[] = [tafelschelpen, hoeLaat];
+// ---------- Strandwinkel ----------
+const euro = (c: number) => (c % 100 === 0 ? `€ ${c / 100}` : `€ ${(c / 100).toFixed(2).replace('.', ',')}`);
+const STRANDWAREN = [['🍦', 'een ijsje'], ['🧃', 'een drankje'], ['🏐', 'een strandbal'], ['🪣', 'een emmertje'], ['🕶️', 'een zonnebril'], ['🍟', 'een pak friet'], ['🪁', 'een vlieger']];
+
+const strandwinkel: SpelDef = {
+  id: 'strandwinkel',
+  titel: 'Strandwinkel',
+  beschrijving: 'Tel het geld en geef wisselgeld terug.',
+  icoon: '💶',
+  leerjaar: 2,
+  vak: 'meten',
+  niveaus: ['euro’s tellen', 'met centen', 'wisselgeld'],
+  voorlezen: true,
+  doelen: ['Geld: munten en briefjes herkennen, bedragen tellen, wisselgeld (tot 20 euro)'],
+  maak(n) {
+    if (n < 2) {
+      const soorten = n === 0 ? [100, 200, 500, 1000] : [10, 20, 50, 100, 200];
+      const aantal = rand(2, n === 0 ? 4 : 5);
+      let centen = Array.from({ length: aantal }, () => kies(soorten));
+      // niet meer dan 20 euro
+      while (centen.reduce((a, b) => a + b, 0) > 2000) centen = centen.slice(1);
+      centen.sort((a, b) => b - a);
+      const totaal = centen.reduce((a, b) => a + b, 0);
+      const stap = n === 0 ? 100 : 10;
+      const afl = [totaal + stap, totaal - stap, totaal + 5 * stap, totaal - 5 * stap, totaal + 2 * stap].filter((x) => x > 0);
+      return {
+        sleutel: centen.join('+'),
+        prompt: 'Hoeveel geld is dit?',
+        visual: { type: 'munten', centen },
+        antwoord: euro(totaal),
+        opties: opties(euro(totaal), afl.map(euro)),
+        uitleg: 'Tel eerst de briefjes en grote munten, daarna de kleine.',
+      };
+    }
+    const [emoji, naam] = kies(STRANDWAREN);
+    const prijs = rand(3, 18) * 50;
+    const betaal = [500, 1000, 2000].find((b) => b > prijs) ?? 2000;
+    const terug = betaal - prijs;
+    return {
+      sleutel: `terug${prijs}van${betaal}`,
+      prompt: `Je koopt ${naam} van ${euro(prijs)}. Je betaalt met ${euro(betaal)}. Hoeveel krijg je terug?`,
+      visual: { type: 'emoji', tekst: emoji },
+      antwoord: euro(terug),
+      opties: opties(euro(terug), [terug + 50, terug - 50, terug + 100, terug - 100, prijs].filter((x) => x > 0 && x !== terug).map(euro)),
+      uitleg: `Tel verder vanaf ${euro(prijs)} tot ${euro(betaal)}: dat is ${euro(terug)}.`,
+    };
+  },
+};
+
+export const LEERJAAR2: SpelDef[] = [tafelschelpen, hoeLaat, strandwinkel];

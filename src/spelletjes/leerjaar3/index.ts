@@ -1,7 +1,8 @@
-﻿// ⛰️ 3e leerjaar: De Tafelberg
+// ⛰️ 3e leerjaar: De Tafelberg
 import type { SpelDef } from '../../core/types';
 import { breukTekst, getalOpties, kies, neem, opties, rand } from '../../core/random';
 import { FRANS, type FransWoord } from '../../inhoud/frans';
+import { AU_OU, EI_IJ } from '../../inhoud/spelling';
 
 const tafelklim: SpelDef = {
   id: 'tafelklim',
@@ -91,4 +92,31 @@ const petitFrancais: SpelDef = {
   },
 };
 
-export const LEERJAAR3: SpelDef[] = [tafelklim, pizzaBreuken, petitFrancais];
+// ---------- Ei of ij? Au of ou? ----------
+const eiOfIj: SpelDef = {
+  id: 'ei-of-ij',
+  titel: 'Ei of ij? Au of ou?',
+  beschrijving: 'Welke klank schrijf je in het woord?',
+  icoon: '🥚',
+  leerjaar: 3,
+  vak: 'spelling',
+  niveaus: ['ei of ij', 'au of ou', 'gemengd'],
+  doelen: ['Spelling: woorden met ei/ij en au/ou (inprentwoorden)'],
+  maak(n) {
+    const lijst = n === 0 ? EI_IJ : n === 1 ? AU_OU : kies([EI_IJ, AU_OU]);
+    const w = kies(lijst);
+    const paar = lijst === EI_IJ ? ['ei', 'ij'] : ['au', 'ou'];
+    return {
+      sleutel: w.woord,
+      prompt: `Vul in: ${w.gat}`,
+      voorlezen: `Hoe schrijf je ${w.woord}?`,
+      visual: w.emoji ? { type: 'emoji', tekst: w.emoji } : undefined,
+      antwoord: w.klank,
+      opties: paar,
+      uitspraak: { tekst: w.woord, taal: 'nl-BE' },
+      uitleg: `Je schrijft: ${w.woord}. Dit zijn inprentwoorden: lees ze vaak, dan onthoud je ze.`,
+    };
+  },
+};
+
+export const LEERJAAR3: SpelDef[] = [tafelklim, pizzaBreuken, eiOfIj, petitFrancais];
