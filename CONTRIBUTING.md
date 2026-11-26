@@ -109,3 +109,4 @@ Klaar: het spel verschijnt in de wereld van dat leerjaar **én** als vak in alle
 - **Beloningen:** beloon inzet en vooruitgang, niet alleen perfectie. Nooit straffen, wel uitleggen.
 - **Privacy:** er gaan geen gegevens van kinderen naar een server. Alles blijft in de browser. Voeg geen tracking, advertenties of externe diensten toe.
 - **Tekeningen en geluiden:** gebruik enkel materiaal dat je vrij mag gebruiken (bv. CC0) en vermeld de bron in de README.
+- **Licentie:** Schoolgames valt onder de [MIT-licentie](LICENSE). Door bij te dragen ga je ermee akkoord dat jouw bijdrage ook onder die licentie valt.
