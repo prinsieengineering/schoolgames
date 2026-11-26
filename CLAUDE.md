@@ -1,6 +1,6 @@
 # Schoolgames: afspraken voor Claude
 
-Leerspelletjes voor kinderen van het 1e tot het 6e leerjaar (Vlaanderen), met een personage, beloningen en een Speelhal met arcadespelletjes. Meerdere ouders bouwen mee. Lees eerst [VOORSTEL.md](VOORSTEL.md) (keuzes en leerlijn) en [CONTRIBUTING.md](CONTRIBUTING.md) (werkwijze).
+Leerspelletjes voor kinderen van de 3e kleuterklas (`leerjaar: 0`) tot het 6e leerjaar (Vlaanderen), met een personage, beloningen en een Speelhal met arcadespelletjes. Meerdere ouders bouwen mee. Lees eerst [VOORSTEL.md](VOORSTEL.md) (keuzes en leerlijn) en [CONTRIBUTING.md](CONTRIBUTING.md) (werkwijze).
 
 ## Taal en toon
 - Antwoord de ouders in het **Nederlands (Vlaams)**. Alle teksten in de app zijn Vlaams-Nederlands: *leerjaar*, *kommagetal*, *half vier*, *juf*.
@@ -16,7 +16,7 @@ Leerspelletjes voor kinderen van het 1e tot het 6e leerjaar (Vlaanderen), met ee
 - `src/core/`: types, opslag, beloningen (XP, sterren, muntjes), badges, spraak, geluid, tafels (gedeelde tafelgenerator)
 - `src/gebruikers/`: profielen, avatar en AvatarMaker, winkel, trofeeën, ouderzicht
 - `src/spelmotor/`: quizscherm, vraagkaart, visuals, resultaat
-- `src/spelletjes/leerjaar1..6/`: de spelletjes; `register.ts` bundelt ze
+- `src/spelletjes/kleuter/` en `leerjaar1..6/`: de spelletjes (kleuters lezen nog niet: `voorlezen: true` en plaatjes als antwoord); `register.ts` bundelt ze
 - `src/inhoud/`: woordenlijsten en zinnen (gewone data)
 - `src/arcade/`: Speelhal, `kern/` en één map per arcadespel
 - `src/wereld/`: startscherm met de 6 werelden
@@ -29,6 +29,7 @@ Leerspelletjes voor kinderen van het 1e tot het 6e leerjaar (Vlaanderen), met ee
 - Nieuw spel = toevoegen aan de lijst van zijn leerjaar. Het verschijnt dan automatisch in de wereld én als vak in de Speelhal.
 - Nieuw arcadespel = map in `src/arcade/`, component met `ArcadeProps` (`kern/ui.tsx`), toevoegen aan `ARCADE` in `Speelhal.tsx`. Speltoestand in `useRef`, HUD-state enkel bijwerken als iets verandert. Test ook met React StrictMode (effects lopen dubbel in dev).
 - Badges: een object toevoegen in `src/core/badges.ts`. Beloon inzet en vooruitgang, nooit straffen.
+- Toon een leerjaar altijd met `leerjaarNaam()` / `leerjaarKort()` uit `src/wereld/werelden.ts` (0 = 3e kleuterklas), nooit met `${lj}e leerjaar`.
 - Bediening altijd met aanraken én toetsenbord (tablet en pc).
 - Enkel vrij bruikbare tekeningen en geluiden (bij voorkeur CC0); vermeld de bron in de README.
 

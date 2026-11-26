@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Vraag } from '../../core/types';
 import { B, H, bereidCanvas, canvasPunt, tempo, useSpellus, useToetsen } from '../kern/engine';
-import { ploef, ster, tekenDeeltjes, tekenZweef, tekst, updateDeeltjes, laadBeeld, type Deeltje, type Zweef } from '../kern/teken';
+import { ploef, ster, tekenDeeltjes, tekenZweef, tekst, updateDeeltjes, laadBeeld, type Deeltje, type Zweef, labelGrootte } from '../kern/teken';
 import { Hud, VraagBalk, tijdTekst, type ArcadeProps } from '../kern/ui';
 import { avatarUrl } from '../../gebruikers/avatar';
 import { geluid } from '../../core/geluid';
@@ -230,7 +230,7 @@ export function Mollenmep({ spel, bron, avatar, leerjaar, onEinde }: ArcadeProps
         ctx.roundRect(g.x - breedte / 2, by - 22, breedte, 44, 10);
         ctx.fill();
         ctx.stroke();
-        const grootte = Math.min(26, 120 / Math.max(1, [...m.tekst].length));
+        const grootte = labelGrootte(m.tekst, 26, 120);
         tekst(ctx, m.tekst, g.x, by, grootte, '#2d2a4a', '');
         if (m.geraakt === 'goed') ster(ctx, g.x + breedte / 2, by - 20, 12, '#ffd23f', s.t * 4);
       }

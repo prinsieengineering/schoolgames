@@ -4,7 +4,7 @@ import { useActief, useProfielen } from '../gebruikers/ProfielContext';
 import { AvatarBeeld } from '../gebruikers/AvatarBeeld';
 import { niveauInfo } from '../core/beloningen';
 import { spelletjesVoor } from '../spelletjes/register';
-import { VAKKEN, WERELDEN, wereldVan } from './werelden';
+import { VAKKEN, WERELDEN, leerjaarKort, leerjaarNaam, wereldVan } from './werelden';
 import { geluid } from '../core/geluid';
 
 /** Facultatief Frans (3e/4e) enkel tonen als de ouder het aanzette. */
@@ -62,14 +62,14 @@ export function Thuis({ onSpel, onGa }: { onSpel: (id: string) => void; onGa: (b
             }}
           >
             <span className="wereld-icoon">{w.icoon}</span>
-            <span>{w.leerjaar}e</span>
+            <span>{leerjaarKort(w.leerjaar)}</span>
             {w.leerjaar === profiel.leerjaar && <span className="jij">jij</span>}
           </button>
         ))}
       </div>
 
       <h2 className="wereld-naam" style={{ color: wereld.kleur }}>
-        {wereld.icoon} {wereld.naam} <span className="klein">· {lj}e leerjaar</span>
+        {wereld.icoon} {wereld.naam} <span className="klein">· {leerjaarNaam(lj)}</span>
       </h2>
 
       <div className="spel-rooster">

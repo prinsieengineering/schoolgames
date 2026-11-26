@@ -6,6 +6,7 @@ import { verrasAvatar } from './avatar';
 import { isGratis } from './winkelItems';
 import { AvatarMaker } from './AvatarMaker';
 import { geluid } from '../core/geluid';
+import { LEERJAREN, leerjaarKort, leerjaarNaam } from '../wereld/werelden';
 
 export function ProfielKiezer({ onOuders }: { onOuders: () => void }) {
   const { profielen, kies } = useProfielen();
@@ -29,7 +30,7 @@ export function ProfielKiezer({ onOuders }: { onOuders: () => void }) {
           >
             <AvatarBeeld avatar={p.avatar} grootte={110} className="rond" />
             <strong>{p.naam}</strong>
-            <span className="klein">{p.leerjaar}e leerjaar</span>
+            <span className="klein">{leerjaarNaam(p.leerjaar)}</span>
           </button>
         ))}
         <button className="profiel-kaart nieuw" onClick={() => setNieuw(true)}>
@@ -61,11 +62,11 @@ function NieuwProfiel({ onKlaar, kanAnnuleren }: { onKlaar: () => void; kanAnnul
           <input value={naam} maxLength={16} onChange={(e) => setNaam(e.target.value)} placeholder="Je naam of bijnaam" autoFocus />
         </label>
         <div className="veld">
-          <span>In welk leerjaar zit je?</span>
+          <span>In welke klas zit je?</span>
           <div className="keuzerij">
-            {([1, 2, 3, 4, 5, 6] as Leerjaar[]).map((lj) => (
+            {LEERJAREN.map((lj) => (
               <button key={lj} className={`chip ${lj === leerjaar ? 'aan' : ''}`} onClick={() => setLeerjaar(lj)}>
-                {lj}e
+                {leerjaarKort(lj)}
               </button>
             ))}
           </div>
