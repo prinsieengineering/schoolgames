@@ -8,7 +8,7 @@ export const B = 480;
 export const H = 640;
 
 /** Jonge kinderen: tragere monsters. */
-export const tempo = (lj: Leerjaar) => [0.45, 0.55, 0.7, 0.8, 0.9, 1][lj - 1];
+export const tempo = (lj: Leerjaar) => [0.35, 0.45, 0.55, 0.7, 0.8, 0.9, 1][lj];
 
 /** Roept `stap(dt)` elke frame op zolang `actief` waar is. */
 export function useSpellus(stap: (dt: number) => void, actief: boolean) {

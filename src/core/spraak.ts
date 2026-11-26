@@ -35,6 +35,7 @@ export function spreek(tekst: string, taal: Taal = 'nl-BE') {
   const stem = zoekStem(taal);
   if (stem) u.voice = stem;
   u.rate = 0.9;
+  u.volume = 1; // altijd voluit (sommige toestellen nemen anders een lagere standaard)
   speechSynthesis.speak(u);
 }
 

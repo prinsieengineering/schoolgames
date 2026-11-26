@@ -1,6 +1,7 @@
 // Gedeelde datatypes voor de hele app. Geen spelinhoud hier.
 
-export type Leerjaar = 1 | 2 | 3 | 4 | 5 | 6;
+/** 0 = 3e kleuterklas, 1..6 = leerjaar van de lagere school. */
+export type Leerjaar = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export type Vak =
   | 'getallen'
@@ -11,7 +12,9 @@ export type Vak =
   | 'meten'
   | 'lezen'
   | 'spelling'
-  | 'frans';
+  | 'frans'
+  /** Kleuren, vormen, patronen (kleuterklas). */
+  | 'ontdekken';
 
 export type Taal = 'nl-BE' | 'fr-FR';
 

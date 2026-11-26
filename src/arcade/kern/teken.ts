@@ -128,6 +128,19 @@ export function hartje(ctx: CanvasRenderingContext2D, x: number, y: number, s: n
   ctx.restore();
 }
 
+/**
+ * Lettergrootte voor een antwoordlabel: zo groot mogelijk (tot `max`) binnen `ruimte` pixels.
+ * Een emoji is ongeveer twee keer zo breed als een cijfer of letter.
+ */
+export function labelGrootte(t: string, max: number, ruimte: number) {
+  let eenheden = 0;
+  for (const c of t) {
+    if (/\p{Extended_Pictographic}/u.test(c)) eenheden += 2;
+    else if (c.codePointAt(0) !== 0x200d && c.codePointAt(0) !== 0xfe0f) eenheden += 1; // geen ZWJ of variatieteken
+  }
+  return Math.min(max, ruimte / Math.max(1, eenheden));
+}
+
 export function tekst(ctx: CanvasRenderingContext2D, t: string, x: number, y: number, grootte: number, kleur = '#fff', rand = 'rgba(0,0,0,0.45)') {
   ctx.save();
   ctx.font = `800 ${grootte}px "Nunito", "Segoe UI", system-ui, sans-serif`;

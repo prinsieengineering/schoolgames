@@ -1,6 +1,6 @@
 # ⭐ Schoolgames
 
-Leerspelletjes voor het 1e tot het 6e leerjaar (Vlaamse leerlijn), met een eigen personage, sterren, XP, muntjes, een winkel, badges, een ouderzicht en een Speelhal met arcadespelletjes.
+Leerspelletjes voor de 3e kleuterklas en het 1e tot het 6e leerjaar (Vlaamse leerlijn), met een eigen personage, sterren, XP, muntjes, een winkel, badges, een ouderzicht en een Speelhal met arcadespelletjes.
 
 Achtergrond en keuzes: zie [VOORSTEL.md](VOORSTEL.md).
 
@@ -71,7 +71,7 @@ src/
 ├── core/            Basis: types, opslag (lokaal), beloningen, badges, spraak, geluid, tafels (tafelgenerator + tafelkeuze)
 ├── gebruikers/      Profielen, avatar (SVG-lagen), winkel, trofeeënkast, ouderzicht (pincode)
 ├── spelmotor/       Quizscherm, vraagkaart, cijferklavier, visuals (klok, breuken, tellen), resultaat
-├── spelletjes/      leerjaar1/ ... leerjaar6/ + register.ts
+├── spelletjes/      kleuter/, leerjaar1/ ... leerjaar6/ + register.ts
 ├── inhoud/          Woordenlijsten, Franse woordenschat, werkwoordzinnen (gewone data)
 ├── arcade/          Speelhal + kern/ (spelmotor, vraagbron, paneel) + één map per arcadespel
 └── wereld/          Startscherm met de 6 werelden
@@ -93,6 +93,7 @@ Maak een map in `src/arcade/`, schrijf een component met de `ArcadeProps` uit `k
 
 | Leerjaar | Spelletjes |
 |---|---|
+| 3e kleuterklas 🧸 | Tel mee! · Kleurenpot · Vormenjacht · Wat komt erna? · Meer of minder? · Rijmen maar! (alles wordt voorgelezen, antwoorden zijn plaatjes) |
 | 1e 🌳 | Tel de diertjes · Plus- en minbos · Woord en plaatje · Klankenjacht |
 | 2e 🏖️ | Tafelschelpen · Hoe laat is het? · Strandwinkel |
 | 3e ⛰️ | Tafelklim · Pizza-breuken · Ei of ij? Au of ou? · Petit français (facultatief) |

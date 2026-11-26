@@ -7,7 +7,7 @@ import { useActief, useProfielen } from '../gebruikers/ProfielContext';
 import { alleSpelletjes } from '../spelletjes/register';
 import { hoogsteOpenNiveau, verwerkRonde } from '../core/beloningen';
 import { spelZichtbaar } from '../wereld/Thuis';
-import { VAKKEN, wereldVan } from '../wereld/werelden';
+import { LEERJAREN, VAKKEN, leerjaarKort, leerjaarNaam, wereldVan } from '../wereld/werelden';
 import { Vraagbron } from './kern/vraagbron';
 import type { ArcadeProps } from './kern/ui';
 import { Resultaat } from '../spelmotor/Resultaat';
@@ -211,7 +211,7 @@ function VakKiezer({ profiel, titel, onKies }: { profiel: Profiel; titel: string
   const { bewaar } = useProfielen();
   const [tafelSpel, setTafelSpel] = useState<SpelDef | null>(null);
   const [tafels, setTafels] = useState(() => tafelKeuzeVan(profiel));
-  const leerjaren = useMemo(() => Array.from({ length: profiel.leerjaar }, (_, i) => (profiel.leerjaar - i) as Leerjaar), [profiel.leerjaar]);
+  const leerjaren = useMemo(() => Array.from({ length: profiel.leerjaar + 1 }, (_, i) => (profiel.leerjaar - i) as Leerjaar), [profiel.leerjaar]);
   if (tafelSpel) {
     return (
       <div className="vak-kiezer">
@@ -252,7 +252,7 @@ function VakKiezer({ profiel, titel, onKies }: { profiel: Profiel; titel: string
         return (
           <div key={lj} className="vak-groep">
             <h3 style={{ color: w.kleur }}>
-              {w.icoon} {lj}e leerjaar
+              {w.icoon} {leerjaarNaam(lj)}
             </h3>
             <div className="vak-knoppen">
               {spellen.map((s) => (
@@ -303,16 +303,16 @@ function DuoSetup({ ik, anderen, onStart }: { ik: Profiel; anderen: Profiel[]; o
             <button key={p.id} className="profiel-kaart" onClick={() => setTweede(p)}>
               <AvatarBeeld avatar={p.avatar} grootte={80} />
               <strong>{p.naam}</strong>
-              <span className="klein">{p.leerjaar}e leerjaar</span>
+              <span className="klein">{leerjaarNaam(p.leerjaar)}</span>
             </button>
           ))}
           <div className="profiel-kaart gast">
             <span className="plus">🧸</span>
             <strong>Gast</strong>
             <div className="keuzerij">
-              {([1, 2, 3, 4, 5, 6] as Leerjaar[]).map((lj) => (
+              {LEERJAREN.map((lj) => (
                 <button key={lj} className={`chip ${gastLj === lj ? 'aan' : ''}`} onClick={() => setGastLj(lj)}>
-                  {lj}e
+                  {leerjaarKort(lj)}
                 </button>
               ))}
             </div>

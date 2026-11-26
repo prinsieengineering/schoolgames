@@ -1,13 +1,13 @@
 import { useRef, useState } from 'react';
 import { TafelKiezer } from '../spelmotor/TafelKiezer';
 import { bewaarTafelKeuze, tafelKeuzeTekst, tafelKeuzeVan } from '../core/tafels';
-import type { Leerjaar, Profiel, Vak } from '../core/types';
+import type { Profiel, Vak } from '../core/types';
 import { hashPin, opslag } from '../core/opslag';
 import { useProfielen } from './ProfielContext';
 import { AvatarBeeld } from './AvatarBeeld';
 import { Cijferklavier } from '../spelmotor/Cijferklavier';
 import { alleSpelletjes, vindSpel } from '../spelletjes/register';
-import { VAKKEN } from '../wereld/werelden';
+import { LEERJAREN, VAKKEN, leerjaarKort, leerjaarNaam } from '../wereld/werelden';
 import { niveauInfo } from '../core/beloningen';
 import { vindBadge } from '../core/badges';
 
@@ -110,7 +110,7 @@ function Overzicht({ terug }: { terug: () => void }) {
               <span>
                 <strong>{x.naam}</strong>
                 <br />
-                <span className="klein">{x.leerjaar}e leerjaar</span>
+                <span className="klein">{leerjaarNaam(x.leerjaar)}</span>
               </span>
             </button>
           ))}
@@ -212,7 +212,7 @@ function KindDetail({ p, bewaar, verwijder }: { p: Profiel; bewaar: (p: Profiel)
                   <td>
                     {s.icoon} {s.titel}
                   </td>
-                  <td>{s.leerjaar}</td>
+                  <td>{s.leerjaar === 0 ? 'kl' : s.leerjaar}</td>
                   <td>{v.sterren.map((st) => '★'.repeat(st) + '☆'.repeat(3 - st)).join('  ')}</td>
                   <td>{v.gespeeld}×</td>
                   <td>{pct(v.juist, v.totaal)}%</td>
@@ -248,9 +248,9 @@ function KindDetail({ p, bewaar, verwijder }: { p: Profiel; bewaar: (p: Profiel)
       <div className="veld">
         <span>Leerjaar</span>
         <div className="keuzerij">
-          {([1, 2, 3, 4, 5, 6] as Leerjaar[]).map((lj) => (
+          {LEERJAREN.map((lj) => (
             <button key={lj} className={`chip ${lj === p.leerjaar ? 'aan' : ''}`} onClick={() => bewaar({ ...p, leerjaar: lj })}>
-              {lj}e
+              {leerjaarKort(lj)}
             </button>
           ))}
         </div>

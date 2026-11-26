@@ -16,6 +16,7 @@ const teller = (p: Profiel, k: string) => p.stats.tellers[k] ?? 0;
 const ronden = (p: Profiel) => Object.values(p.spellen).reduce((s, v) => s + v.gespeeld, 0) + Object.values(p.arcade).reduce((s, v) => s + v.gespeeld, 0);
 
 const WERELDEN: Record<Leerjaar, string> = {
+  0: 'Speeltuin',
   1: 'Letterbos',
   2: 'Rekenstrand',
   3: 'Tafelberg',
@@ -28,8 +29,8 @@ function wereldBadge(lj: Leerjaar): BadgeDef {
   return {
     id: `wereld-${lj}`,
     titel: `${WERELDEN[lj]} voltooid`,
-    icoon: ['🌳', '🏖️', '⛰️', '🏰', '🚂', '🚀'][lj - 1],
-    uitleg: `Haal minstens 2 sterren op het hoogste niveau van elk spel in leerjaar ${lj}.`,
+    icoon: ['🧸', '🌳', '🏖️', '⛰️', '🏰', '🚂', '🚀'][lj],
+    uitleg: `Haal minstens 2 sterren op het hoogste niveau van elk spel ${lj === 0 ? 'in de kleuterklas' : `in leerjaar ${lj}`}.`,
     check: (p) =>
       spelletjesVoor(lj)
         .filter((s) => !s.facultatief)
@@ -71,7 +72,7 @@ export const BADGES: BadgeDef[] = [
   { id: 'teamspeler', titel: 'Teamspeler', icoon: '🪢', uitleg: 'Speel Touwtrekken met iemand samen.', check: (p) => teller(p, 'touwtrekken') >= 1 },
   { id: 'record', titel: 'Record!', icoon: '🏆', uitleg: 'Verbeter je eigen record in de Speelhal.', check: (p) => teller(p, 'records') >= 1 },
   { id: 'spaarpot', titel: 'Spaarpot', icoon: '🐷', uitleg: 'Spaar 300 muntjes.', check: (p) => p.muntjes >= 300 },
-  ...([1, 2, 3, 4, 5, 6] as Leerjaar[]).map(wereldBadge),
+  ...([0, 1, 2, 3, 4, 5, 6] as Leerjaar[]).map(wereldBadge),
 ];
 
 export function nieuweBadges(p: Profiel, ctx: { sterren: number; resultaat: RondeResultaat }): string[] {
